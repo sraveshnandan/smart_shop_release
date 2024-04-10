@@ -32,7 +32,7 @@ const StackLayout = () => {
         name="Search"
         options={{
           tabBarLabel: "Search",
-          headerTitle: "Search Products",
+          headerShown:false,
           tabBarIcon: ({ color }) => (
             <Ionicons name="search-sharp" size={25} color={color} />
           ),

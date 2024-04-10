@@ -14,7 +14,7 @@ import { useSelector } from "react-redux";
 import { RootState } from "@/redux/Store";
 import { ProductCard } from "@/components";
 import { IProduct } from "@/types";
-import { useNavigation } from "expo-router";
+import { router, useNavigation } from "expo-router";
 
 const Search = () => {
   const navigation = useNavigation();
@@ -39,8 +39,12 @@ const Search = () => {
 
   useLayoutEffect(() => {
     navigation.setOptions({
+      headerShown: true,
+      headerTitle: "Search Products",
       headerRight: () => (
-        <TouchableOpacity>
+        <TouchableOpacity
+          onPress={() => router.push(`/(tabs)/Search/ShopSearch`)}
+        >
           <Text
             style={{
               color: Colors.Primary,
@@ -98,7 +102,10 @@ const Search = () => {
           placeholder="Search products"
         />
       </View>
-      <ScrollView showsVerticalScrollIndicator={false}>
+      <ScrollView
+        contentContainerStyle={{ alignItems: "center" }}
+        showsVerticalScrollIndicator={false}
+      >
         {/* Search Bar  */}
 
         {/* Product List Title  */}

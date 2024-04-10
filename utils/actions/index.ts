@@ -132,6 +132,7 @@ const fetchProfile = () => {
         .request(query)
         .then((res: any) => {
           if (res.profile.user) {
+            return res.profile.user;
             console.log("navigating to home page.");
             router.replace("/(tabs)/");
           } else {
@@ -214,7 +215,7 @@ const LikeAndUnlikeProduct = async (id: string) => {
     await gql_client
       .request(query, variables)
       .then((res: any) => {
-        return Alert.alert("Success", `${res.likeProduct}`);
+        return Alert.alert("Success");
       })
       .catch((e: any) => {
         return Alert.alert("Error", `${e.message}`);
@@ -242,6 +243,11 @@ const fetchAllShops = async (next: (shops: Ishop[]) => void) => {
           }
           followers {
             __typename
+            _id
+            name
+            avatar {
+              url
+            }
           }
           images {
             public_id
@@ -251,6 +257,13 @@ const fetchAllShops = async (next: (shops: Ishop[]) => void) => {
           products {
             _id
             title
+            description
+            original_price
+            discount_price
+            images {
+              public_id
+              url
+            }
             category {
               _id
             }
@@ -272,6 +285,42 @@ const fetchAllShops = async (next: (shops: Ishop[]) => void) => {
   }
 };
 
+const FetchAllUsers = async (next: (users: IUser[]) => void) => {
+  try {
+    const query = gql`
+      query GETALLUSERS {
+        users {
+          _id
+          email
+          name
+          avatar {
+            public_id
+            url
+          }
+          phone_no
+          isAdmin
+          isShopOwner
+          createdAt
+          shops {
+            _id
+          }
+          updatedAt
+        }
+      }
+    `;
+    gql_client
+      .request(query)
+      .then((res: any) => {
+        return next(res.users);
+      })
+      .catch((e: any) => {
+        console.log(e);
+      });
+  } catch (error: any) {
+    console.log(error.message);
+  }
+};
+
 export {
   fetchAllProducts,
   fetchAllShops,
@@ -280,4 +329,5 @@ export {
   uploaImg,
   uploadImagesToCloudinary,
   getAllCategory,
+  FetchAllUsers,
 };

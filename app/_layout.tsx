@@ -1,14 +1,21 @@
-import { store } from "@/redux/Store";
+import { RootState, store } from "@/redux/Store";
 import { setAllCategory, setProducts } from "@/redux/reducers/product.reducer";
 import { setShops } from "@/redux/reducers/shop.reducers";
 import {
+  addToWishlist,
+  bulkAddWishlist,
+  setAllUsers,
+} from "@/redux/reducers/user.reducer";
+import { IProduct, IUser } from "@/types";
+import {
+  FetchAllUsers,
   fetchAllProducts,
   fetchAllShops,
   getAllCategory,
 } from "@/utils/actions";
 import { Stack } from "expo-router";
 import { useEffect } from "react";
-import { Provider, useDispatch } from "react-redux";
+import { Provider, useDispatch, useSelector } from "react-redux";
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -23,21 +30,28 @@ export const unstable_settings = {
 
 const RootLayoutNav = () => {
   const dispatch = useDispatch();
-  const setAllProducts = async () => {
-    fetchAllProducts((p) => {
+  const user: any = useSelector((state: RootState) => state.user.details);
+  const setAllData = async () => {
+    fetchAllProducts((p: IProduct[]) => {
+      console.log("Adding All products data.");
       dispatch(setProducts(p));
     });
     fetchAllShops((s) => {
+      console.log("Adding all shops data");
       dispatch(setShops(s));
     });
 
     getAllCategory((category) => {
+      console.log("setting all categories");
       dispatch(setAllCategory(category));
     });
-    
+    FetchAllUsers((users: IUser[]) => {
+      console.log("setting all  user data");
+      dispatch(setAllUsers(users));
+    });
   };
   useEffect(() => {
-    setAllProducts();
+    setAllData();
   }, []);
   return (
     <Stack screenOptions={{ headerShown: false }}>

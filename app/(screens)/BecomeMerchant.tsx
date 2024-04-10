@@ -23,6 +23,7 @@ import { setShops } from "@/redux/reducers/shop.reducers";
 const BecomeMerchant = () => {
   const dispatch = useDispatch();
   const AllShops: any = useSelector((state: RootState) => state.shop.shops);
+  const user:any = useSelector((state:RootState)=> state.user.details); 
   const navigation = useNavigation();
   const [name, setname] = useState("");
   const [descrition, setdescrition] = useState("");

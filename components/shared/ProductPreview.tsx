@@ -141,5 +141,3 @@ const Productpage = ({ p }: { p: any }) => {
 };
 
 export default Productpage;
-
-const styles = StyleSheet.create({});

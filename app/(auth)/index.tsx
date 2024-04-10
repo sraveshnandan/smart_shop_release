@@ -19,8 +19,9 @@ import { gql } from "graphql-request";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { gql_client } from "@/utils";
 import { router, useNavigation } from "expo-router";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { setAuthState, setUserData } from "@/redux/reducers/user.reducer";
+import { RootState } from "@/redux/Store";
 
 export default function Login() {
   const dispatch = useDispatch();
@@ -29,7 +30,6 @@ export default function Login() {
   const [email, setemail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setloading] = useState<boolean>(false);
-
   const handleLogin = async () => {
     setloading(true);
     console.log("LOgin function started.");
@@ -83,7 +83,7 @@ export default function Login() {
       });
   };
 
-   const fetchProfile = () => {
+  const fetchProfile = () => {
     setloading(true);
     AsyncStorage.getItem("token").then(async (res) => {
       if (res !== null) {

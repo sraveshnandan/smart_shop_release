@@ -10,7 +10,7 @@ import {
 } from "react-native";
 import React, { useLayoutEffect, useState } from "react";
 import { router, useNavigation } from "expo-router";
-import { Colors, screenHeight, screenWidth } from "@/constants";
+import { Colors } from "@/constants";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 import * as ImagePicker from "expo-image-picker";

@@ -24,9 +24,7 @@ const Profile = () => {
   const details: any = useSelector((state: RootState) => state.user.details);
   const allShops = useSelector((state: RootState) => state.shop.shops);
   const [shopOwner, setshopOwner] = useState(details.isShopOwner);
-  const [shop, setshop] = useState<Ishop | undefined>(allShops!.filter(
-    (s) => s.owner?._id.toString() === details._id.toString()
-  )[0]);
+  const [shop, setshop] = useState<Ishop | undefined>();
 
   const [authType, setauthType] = useState(authState);
 
@@ -63,6 +61,7 @@ const Profile = () => {
         headerTitle: `${shop?.name}`,
         headerRight: () => (
           <Ionicons
+            onPressIn={handlelogout}
             name="settings-sharp"
             size={25}
             style={{ marginRight: "10%" }}

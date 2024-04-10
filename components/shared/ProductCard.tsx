@@ -7,16 +7,17 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useLayoutEffect, useState } from "react";
 import { Colors } from "@/constants";
-import { getPercentage } from "@/utils";
+import { getPercentage, gql_client, token } from "@/utils";
 import { Ionicons } from "@expo/vector-icons";
-import { IProduct } from "@/types";
+import { IProduct, IUser } from "@/types";
 import { router } from "expo-router";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/redux/Store";
 import { LikeAndUnlikeProduct } from "@/utils/actions";
 import { addToWishlist } from "@/redux/reducers/user.reducer";
+import { gql } from "graphql-request";
 const ScreenWidth = Dimensions.get("screen").width;
 const ProductCard = ({ p }: { p: IProduct }) => {
   const dispatch = useDispatch();
@@ -24,26 +25,25 @@ const ProductCard = ({ p }: { p: IProduct }) => {
     (state: RootState) => state.product.products
   );
   const details: any = useSelector((state: RootState) => state.user.details);
-
+  const AllUser: any = useSelector((state: RootState) => state.user.users);
   const authState: any = useSelector(
     (state: RootState) => state.user.authState
   );
   const AllWishlist: any = useSelector(
     (state: RootState) => state.user.wishlist
   );
-  const [liked, setliked] = useState<boolean>(
-    p.likes.some((p: any) => p._id === details._id)
-  );
-  const [followed, setfollowed] = useState(true);
+  const [liked, setliked] = useState<boolean>(false);
+  const [followed, setfollowed] = useState(false);
+  const [owner, setowner] = useState<IUser | undefined>();
   const [unauth, setunauth] = useState(false);
-
+  // handling like function
   const handleLike = async () => {
     if (authState) {
       if (!liked) {
         console.log("function may start.");
         LikeAndUnlikeProduct(p._id);
         dispatch(addToWishlist({ ...p }));
-        setliked(true);
+        setliked((prev) => !prev);
       } else {
         return Alert.alert("Alert", "Item already added to your cart.");
       }
@@ -51,9 +51,45 @@ const ProductCard = ({ p }: { p: IProduct }) => {
       Alert.alert("Info", "Please login to perform this task.");
     }
   };
+
+  const handleFollow = async () => {
+    const query = gql`
+      mutation FOLLOWANDUNFOLLOWSHOP($SHOPID: ID!) {
+        followShop(shopId: $SHOPID)
+      }
+    `;
+    const variables = {
+      SHOPID: p.owner._id,
+    };
+    gql_client
+      .setHeader("token", token)
+      .request(query, variables)
+      .then((res: any) => {
+        console.log(res);
+        if (res.followShop === "You can't follow your shop.") {
+          return Alert.alert("Warning", "You can't follow your shop.");
+        }
+        setfollowed((prev) => !prev);
+      })
+      .catch((e: any) => {
+        console.log(e);
+      });
+  };
+
+  // Final useEffect
   useEffect(() => {
-    return () => {};
-  }, []);
+    const ind = AllWishlist.findIndex(
+      (prd: IProduct) => prd._id.toString() === p._id.toString()
+    );
+    if (ind !== -1) {
+      console.log("Liked");
+      setliked(true);
+    }
+    const pOwner = AllUser.find(
+      (data: IUser) => data._id.toString() === p?.owner?.owner?._id.toString()
+    );
+    setowner(pOwner);
+  }, [AllWishlist, details]);
 
   return (
     <View style={styles.productCard}>
@@ -65,38 +101,66 @@ const ProductCard = ({ p }: { p: IProduct }) => {
           alignItems: "center",
           justifyContent: "space-between",
           paddingHorizontal: 10,
-          paddingVertical: 10,
+          paddingVertical: 5,
+          borderBottomWidth: 2,
+          marginBottom: 10,
+          borderBottomColor: "#888",
         }}
       >
         <View style={{ flexDirection: "row", gap: 15, alignItems: "center" }}>
-          <Ionicons
-            style={{ backgroundColor: Colors.CardBg }}
-            name="storefront-outline"
-            size={28}
-          />
+          {owner !== undefined ? (
+            <Image
+              style={{
+                width: 40,
+                height: 40,
+                borderRadius: 55,
+                borderColor: Colors.Primary,
+                borderWidth: 2,
+                padding: 2,
+              }}
+              source={{ uri: owner?.avatar?.url }}
+            />
+          ) : (
+            <Ionicons
+              style={{ backgroundColor: Colors.CardBg }}
+              name="storefront-outline"
+              size={28}
+            />
+          )}
           <Text style={{ fontSize: 18, fontWeight: "600" }}>
             {p?.owner?.name}
           </Text>
         </View>
 
-        <TouchableOpacity
-          style={[
-            {
-              backgroundColor: Colors.Primary,
-              paddingHorizontal: 15,
-              paddingVertical: 5,
-              borderRadius: 4,
-            },
-            followed
-              ? { backgroundColor: "#444" }
-              : { backgroundColor: Colors.Primary },
-          ]}
-          onPress={() => setfollowed((prev) => !prev)}
-        >
-          <Text style={{ color: Colors.White, fontWeight: "600" }}>
-            {followed ? "Unfollow" : "follow"}
-          </Text>
-        </TouchableOpacity>
+        {p.owner.owner?._id === details._id ? (
+          <View style={{ alignItems: "center", flexDirection: "row", gap: 15 }}>
+            <TouchableOpacity>
+              <Ionicons name="trash-sharp" size={25} color={"red"} />
+            </TouchableOpacity>
+            <TouchableOpacity>
+              <Ionicons name="pencil-sharp" size={25} color={"red"} />
+            </TouchableOpacity>
+          </View>
+        ) : (
+          <TouchableOpacity
+            style={[
+              {
+                backgroundColor: Colors.Primary,
+                paddingHorizontal: 15,
+                paddingVertical: 5,
+                borderRadius: 4,
+              },
+              followed
+                ? { backgroundColor: "#444" }
+                : { backgroundColor: Colors.Primary },
+            ]}
+            onPress={handleFollow}
+          >
+            <Text style={{ color: Colors.White, fontWeight: "600" }}>
+              {followed ? "Unfollow" : "follow"}
+            </Text>
+          </TouchableOpacity>
+        )}
       </View>
       {/* Product Image  */}
       <View

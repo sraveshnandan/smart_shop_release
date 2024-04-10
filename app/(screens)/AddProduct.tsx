@@ -19,13 +19,13 @@ import { Ionicons } from "@expo/vector-icons";
 import { Colors, screenWidth } from "@/constants";
 import * as ImagePicker from "expo-image-picker";
 import DropDown from "@/components/shared/DropDownPicker";
-import { ProductPreview } from "@/components";
+import { ProductPreviewBox } from "@/components";
 import { fetchAllProducts, uploadImagesToCloudinary } from "@/utils/actions";
 import { gql } from "graphql-request";
 import { gql_client, token } from "@/utils";
 import { setProducts } from "@/redux/reducers/product.reducer";
 import { router } from "expo-router";
-import { IProduct, Ishop } from "@/types";
+import { IProduct } from "@/types";
 
 const AddProduct = () => {
   const dispatch = useDispatch();
@@ -516,7 +516,7 @@ const AddProduct = () => {
             <ActivityIndicator size={"large"} color={Colors.Primary} />
           </View>
         )}
-        <ProductPreview p={dummyProduct} />
+        <ProductPreviewBox p={dummyProduct} />
 
         <TouchableOpacity
           disabled={loading}
