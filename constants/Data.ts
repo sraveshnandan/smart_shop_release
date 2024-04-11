@@ -14,6 +14,11 @@ const ProfileButtons: any[] = [
     link: "/(screens)/EditProfile",
   },
   {
+    title: "Update Password",
+    link: "/(screens)/UpdatePassword",
+  },
+
+  {
     title: "Your smart shops",
     link: "/(screens)/ShopLists",
   },
@@ -36,6 +41,31 @@ const ProfileButtons: any[] = [
   {
     title: "Log out",
     link: "/(screens)/EditProfile",
+  },
+];
+
+const ownersButtons: any[] = [
+  {
+    title: "Update Password",
+    link: "/(screens)/UpdatePassword",
+  },
+
+  {
+    title: "Your smart shops",
+    link: "/(screens)/ShopLists",
+  },
+
+  {
+    title: "Help",
+    link: "",
+  },
+  {
+    title: "Career",
+    link: "",
+  },
+  {
+    title: "Ads Service",
+    link: "",
   },
 ];
 
@@ -92,4 +122,4 @@ const Categories: ICategories[] = [
     icon: "https://cdn-icons-png.flaticon.com/512/4841/4841216.png",
   },
 ];
-export { SliderImages, ProfileButtons, Categories };
+export { SliderImages, ProfileButtons, Categories, ownersButtons };

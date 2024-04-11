@@ -43,6 +43,7 @@ export interface IUser {
   _id: string;
   name?: string;
   email?: string;
+  phone_no?:string;
   avatar: {
     public_id?: string;
     url: string;

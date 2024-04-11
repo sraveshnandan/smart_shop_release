@@ -11,12 +11,17 @@ import React, { useEffect, useLayoutEffect, useState } from "react";
 import { LoginAlert } from "@/components";
 import { useSelector } from "react-redux";
 import { RootState } from "@/redux/Store";
-import { Colors, ProfileButtons, screenHeight } from "@/constants";
+import {
+  Colors,
+  ProfileButtons,
+  ownersButtons,
+  screenWidth,
+} from "@/constants";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { router, useNavigation } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Ionicons } from "@expo/vector-icons";
-import { Ishop } from "@/types";
+import { AntDesign, Ionicons } from "@expo/vector-icons";
+import { IProduct, Ishop } from "@/types";
 
 const Profile = () => {
   const navigation = useNavigation();
@@ -24,9 +29,14 @@ const Profile = () => {
   const details: any = useSelector((state: RootState) => state.user.details);
   const allShops = useSelector((state: RootState) => state.shop.shops);
   const [shopOwner, setshopOwner] = useState(details.isShopOwner);
-  const [shop, setshop] = useState<Ishop | undefined>();
-
+  const [shop, setshop] = useState<Ishop | undefined>(
+    allShops?.find(
+      (s: Ishop) => s.owner?.email?.toString() === details.email.toString()
+    )
+  );
   const [authType, setauthType] = useState(authState);
+
+  const [toggle, settoggle] = useState(false);
 
   // handle logout function
   const handlelogout = () => {
@@ -51,17 +61,15 @@ const Profile = () => {
 
   if (shopOwner) {
     useLayoutEffect(() => {
-      const userShop = allShops!.filter(
-        (s) => s.owner?._id.toString() === details._id.toString()
+      const userShop = allShops?.find(
+        (s: Ishop) => s.owner?.email?.toString() === details.email.toString()
       );
-      console.log("usershop", userShop);
-      setshop(userShop[0]);
-
+      setshop(userShop);
       navigation.setOptions({
         headerTitle: `${shop?.name}`,
         headerRight: () => (
           <Ionicons
-            onPressIn={handlelogout}
+            onPressIn={() => settoggle((prev) => !prev)}
             name="settings-sharp"
             size={25}
             style={{ marginRight: "10%" }}
@@ -82,7 +90,7 @@ const Profile = () => {
           </View>
         ),
       });
-    }, []);
+    }, [allShops, details]);
   }
 
   if (!shopOwner && authState) {
@@ -96,91 +104,232 @@ const Profile = () => {
   return authType ? (
     <>
       {shopOwner === true ? (
-        <SafeAreaView style={{ flex: 1, borderWidth: 1 }}>
-          {/* Shop Profile Card  */}
-          <View
-            style={{
-              width: "95%",
-              alignSelf: "center",
-              backgroundColor: Colors.White,
-              position: "relative",
-              height: screenHeight * 0.44,
-              borderRadius: 8,
-              shadowColor: "#8deff4",
-              shadowOffset: { width: 5, height: 5 },
-              shadowOpacity: 0.43,
-            }}
+        <SafeAreaView style={{ flex: 1 }}>
+          <ScrollView
+            contentContainerStyle={{ alignItems: "center" }}
+            showsVerticalScrollIndicator={false}
           >
-            {/* Shop Banner Image  */}
-            {!shop?.images?.length ? (
+            <View style={{ borderWidth: 2, width: "95%" }}>
+              {shop?.images?.length! > 0 ? (
+                <Image source={{ uri: shop?.images![0].url }} />
+              ) : (
+                <Ionicons name="storefront-outline" />
+              )}
+            </View>
+            {/* Shop Profile Card  */}
+            {toggle && (
               <View
                 style={{
-                  alignItems: "center",
-                  justifyContent: "center",
-                  width: "100%",
-                  backgroundColor: Colors.LightBg,
+                  backgroundColor: Colors.White,
+                  width: screenWidth * 0.35,
+                  borderRadius: 6,
+                  position: "absolute",
+                  right: 2,
+                  zIndex: 100,
+                  padding: 8,
                 }}
               >
-                <Ionicons name="storefront-outline" size={200} color={"#555"} />
+                {/* Edit Shop button  */}
+
+                <TouchableOpacity
+                  style={{
+                    width: "100%",
+                    backgroundColor: Colors.LightBg,
+                    marginVertical: 10,
+                    paddingVertical: 8,
+                    alignItems: "center",
+                    borderRadius: 6,
+                    flexDirection: "row",
+                    justifyContent: "center",
+                    gap: 8,
+                  }}
+                  onPress={() => router.push(`/(screens)/EditShop`)}
+                >
+                  <AntDesign name="edit" color={Colors.Link} size={20} />
+                  <Text style={{ fontWeight: "600", color: Colors.Link }}>
+                    Edit shop
+                  </Text>
+                </TouchableOpacity>
+
+                {/* Logout Button  */}
+                <TouchableOpacity
+                  style={{
+                    width: "100%",
+                    backgroundColor: Colors.LightBg,
+                    marginVertical: 10,
+                    paddingVertical: 8,
+                    alignItems: "center",
+                    borderRadius: 6,
+                    flexDirection: "row",
+                    justifyContent: "center",
+                  }}
+                  onPress={handlelogout}
+                >
+                  <Ionicons name="log-out-sharp" color={"red"} size={20} />
+                  <Text style={{ fontWeight: "600", color: "red" }}>
+                    Logout
+                  </Text>
+                </TouchableOpacity>
               </View>
-            ) : (
-              <Image
-                style={{ width: "100%", height: 250, resizeMode: "cover" }}
-                source={{ uri: shop?.images![0]?.url }}
-              />
             )}
-
-            {/* Shop Owner Image  */}
+            {/* Shop stats  */}
             <View
               style={{
-                borderWidth: 4,
-                position: "absolute",
-                width: 120,
-                height: 120,
-                borderRadius: 100,
-                overflow: "hidden",
-                padding: 2,
-                alignItems: "center",
-                justifyContent: "center",
-                top: "50%",
-                zIndex: 100,
-                left: 2,
-                borderColor: Colors.Primary,
+                padding: 15,
+                marginTop: 25,
+                width: "96%",
+                alignSelf: "center",
+                borderRadius: 8,
+                backgroundColor: Colors.White,
+                flexDirection: "row",
+                justifyContent: "space-around",
               }}
             >
-              <Image
+              {/* Shops Products  */}
+
+              <View
                 style={{
-                  width: 130,
-                  height: 130,
-                  resizeMode: "cover",
-                  borderRadius: 100,
+                  backgroundColor: Colors.LightBg,
+                  width: "40%",
+                  padding: 10,
+                  alignItems: "center",
                 }}
-                source={{ uri: details.avatar.url }}
-              />
+              >
+                <Text
+                  style={{ fontSize: 18, fontWeight: "600", marginBottom: 20 }}
+                >
+                  Products
+                </Text>
+
+                <Text style={{ color: Colors.Primary, fontSize: 28 }}>
+                  {shop?.products?.length}
+                </Text>
+              </View>
+
+              {/* Shops Followers  */}
+
+              <View
+                style={{
+                  backgroundColor: Colors.LightBg,
+                  width: "40%",
+                  padding: 10,
+                  alignItems: "center",
+                }}
+              >
+                <Text
+                  style={{ fontSize: 18, fontWeight: "600", marginBottom: 20 }}
+                >
+                  Followers
+                </Text>
+
+                <Text style={{ color: Colors.Primary, fontSize: 28 }}>
+                  {shop?.followers?.length}
+                </Text>
+              </View>
             </View>
 
-            {/* Shop Details  */}
+            {/* IMP CTA  */}
 
             <View
               style={{
-                width: "65%",
-                position: "absolute",
-                top: "70%",
-                right: 0,
-                paddingLeft: "2%",
+                padding: 15,
+                marginTop: 25,
+                width: "96%",
+                alignSelf: "center",
+                borderRadius: 8,
+                backgroundColor: Colors.White,
               }}
             >
-              <Text style={{ fontSize: 28, fontWeight: "600" }}>
-                {shop?.name}
+              {ownersButtons.map((item, index) => (
+                <TouchableOpacity
+                  style={{
+                    backgroundColor: Colors.LightBg,
+                    marginVertical: 15,
+                    paddingVertical: 18,
+                    borderRadius: 8,
+                    paddingLeft: 20,
+                  }}
+                  onPress={() => handleLinkPress(item.link)}
+                  key={index}
+                >
+                  <Text style={{ fontWeight: "600", fontSize: 20 }}>
+                    {item.title}
+                  </Text>
+                </TouchableOpacity>
+              ))}
+              <Text
+                style={{
+                  fontSize: 25,
+                  fontWeight: "600",
+                  marginVertical: 15,
+                  textAlign: "center",
+                }}
+              >
+                Your Products
               </Text>
-              <Text style={{ color: "#444", fontWeight: "600" }}>
-                {shop?.address}
-              </Text>
-            </View>
-          </View>
+              {/* Product section  */}
+              <View
+                style={{
+                  width: "100%",
+                  flexDirection: "row",
+                  alignItems: "center",
+                  gap: 8,
+                  flexWrap: "wrap",
+                  alignSelf: "center",
+                  justifyContent: "center",
+                  backgroundColor: Colors.LightBg,
+                  paddingVertical: 15,
+                  borderRadius: 8,
+                }}
+              >
+                {shop?.products?.length! > 0 ? (
+                  shop?.products?.map((p: IProduct, index) => (
+                    <TouchableOpacity
+                      style={{
+                        width: "46%",
+                        alignItems: "center",
 
-          {/* Shop stats  */}
-          <View style={{ borderWidth: 1, padding: 15, marginTop: 20 }}></View>
+                        backgroundColor: Colors.White,
+                        borderRadius: 6,
+                        padding: 4,
+                        alignSelf: "center",
+                      }}
+                      key={index}
+                      onPress={() =>
+                        router.push(
+                          `/(screens)/ProductsDetails?id=${p._id}` as any
+                        )
+                      }
+                    >
+                      {/* Product Image  */}
+                      <Image
+                        style={{
+                          width: "100%",
+                          height: 150,
+                          resizeMode: "contain",
+                        }}
+                        source={{ uri: p.images[0].url }}
+                      />
+
+                      {/* Product Details  */}
+                      <Text style={{ fontWeight: "600", fontSize: 20 }}>
+                        {p.title?.substring(0, 15)}
+                      </Text>
+                      <Text style={{ color: "green", fontSize: 18 }}>
+                        ₹{p.discount_price}
+                      </Text>
+                    </TouchableOpacity>
+                  ))
+                ) : (
+                  <View style={{ alignItems: "center" }}>
+                    <Text style={{ fontSize: 25, color: "red" }}>
+                      No Products yet.
+                    </Text>
+                  </View>
+                )}
+              </View>
+            </View>
+          </ScrollView>
         </SafeAreaView>
       ) : (
         // NORMAL USER PROFILE PAGE

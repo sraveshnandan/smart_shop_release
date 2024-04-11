@@ -1,4 +1,5 @@
 import {
+  ActivityIndicator,
   Alert,
   Image,
   ScrollView,
@@ -7,7 +8,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import React, { useLayoutEffect, useState } from "react";
+import React, { useEffect, useLayoutEffect, useState } from "react";
 import { router, useLocalSearchParams, useNavigation } from "expo-router";
 import { Colors, screenHeight } from "@/constants";
 import { useSelector } from "react-redux";
@@ -32,9 +33,13 @@ const Shopdetails = (props: Props) => {
   // Normal states
   const [followed, setfollowed] = useState(false);
   const [shop, setshop] = useState<Ishop | undefined>();
+  const [loading, setloading] = useState(false);
+  const [owner, setowner] = useState(false);
 
-  const handleFollowState = async () => {
+  const handleFollowState = async (shopId: string) => {
+    console.log(shop);
     if (authState) {
+      setloading(true);
       console.log("Follow button Pressed");
       const query = gql`
         mutation FOLLOWANDUNFOLLOWSHOP($SHOPID: ID!) {
@@ -48,10 +53,13 @@ const Shopdetails = (props: Props) => {
         .setHeader("token", token)
         .request(query, variables)
         .then((resp: any) => {
+          setloading(false);
           setfollowed((prev) => !prev);
           return Alert.alert("Success", `${resp.followShop}`);
         })
         .catch((err: any) => {
+          setloading(false);
+          console.log(err);
           return Alert.alert("Error", "Something went wrong.");
         });
     } else {
@@ -73,7 +81,7 @@ const Shopdetails = (props: Props) => {
             },
             followed ? { backgroundColor: "#222" } : {},
           ]}
-          onPress={handleFollowState}
+          onPress={() => handleFollowState(shop?._id!)}
         >
           <Text
             style={{ color: "#fff", fontWeight: "600", textAlign: "center" }}
@@ -88,6 +96,7 @@ const Shopdetails = (props: Props) => {
       (s: Ishop) => s._id.toString() === params.shopId.toString()
     );
     setshop(st);
+
     if (user) {
       const fIndex = st?.followers?.findIndex(
         (s: IUser) => s._id.toString() === user._id.toString()
@@ -95,13 +104,25 @@ const Shopdetails = (props: Props) => {
       if (fIndex !== -1) {
         setfollowed(true);
       }
+      if (user?._id.toString() === shop?.owner?._id.toString()) {
+        setowner(true);
+      }
     }
-  }, []);
-  return (
+  }, [user, allShops]);
+
+  useEffect(() => {
+    console.log(shop);
+  }, [allShops]);
+
+  return loading ? (
+    <View>
+      <ActivityIndicator size={"large"} />
+    </View>
+  ) : (
     <ScrollView
       showsVerticalScrollIndicator={false}
       contentContainerStyle={{ alignItems: "center" }}
-      style={{ flex: 1, borderWidth: 2 }}
+      style={{ flex: 1 }}
     >
       {/* SHOP DATA  */}
 
@@ -220,7 +241,6 @@ const Shopdetails = (props: Props) => {
       <Text style={{ fontSize: 28, marginVertical: 20 }}>Shop Owner</Text>
       <View
         style={{
-          borderWidth: 2,
           width: "96%",
           alignSelf: "center",
           padding: 8,
@@ -251,9 +271,11 @@ const Shopdetails = (props: Props) => {
             {shop?.owner?.name}
           </Text>
 
-          <Text style={{ fontSize: 18, fontWeight: "600", color: "#444" }}>
+          <Text style={{ fontSize: 16, fontWeight: "600", color: "#888" }}>
             {shop?.owner?.email}
           </Text>
+
+          <Text>+91 {shop?.owner?.phone_no}</Text>
         </View>
       </View>
 
@@ -269,18 +291,22 @@ const Shopdetails = (props: Props) => {
           flexDirection: "row",
           alignItems: "center",
           gap: 8,
+          flexWrap: "wrap",
+          alignSelf: "center",
+          justifyContent: "center",
         }}
       >
-        {shop?.products?.length! > 0 &&
+        {shop?.products?.length! > 0 ? (
           shop?.products?.map((p: IProduct, index) => (
             <TouchableOpacity
               style={{
                 width: "45%",
                 alignItems: "center",
-                borderWidth: 2,
+
                 backgroundColor: Colors.White,
                 borderRadius: 6,
                 padding: 4,
+                alignSelf: "center",
               }}
               key={index}
               onPress={() =>
@@ -289,15 +315,51 @@ const Shopdetails = (props: Props) => {
             >
               {/* Product Image  */}
               <Image
-                style={{ width: "100%", height: 150 }}
+                style={{ width: "100%", height: 150, resizeMode: "contain" }}
                 source={{ uri: p.images[0].url }}
               />
 
               {/* Product Details  */}
-              <Text>{p.title?.substring(0, 25)}</Text>
-              <Text>{p.discount_price}</Text>
+              <Text style={{ fontWeight: "600", fontSize: 20 }}>
+                {p.title?.substring(0, 15)}
+              </Text>
+              <Text style={{ color: "green", fontSize: 18 }}>
+                ₹{p.discount_price}
+              </Text>
             </TouchableOpacity>
-          ))}
+          ))
+        ) : (
+          <View style={{ alignItems: "center" }}>
+            <Text style={{ fontSize: 25, color: "red" }}>No Products yet.</Text>
+            {/* {user?._id.toString() === shop?.owner?._id.toString() ? (
+              <TouchableOpacity
+                style={{
+                  backgroundColor: Colors.Primary,
+                  width: "100%",
+                  marginVertical: 25,
+                  paddingVertical: 15,
+                  borderRadius: 55,
+                  paddingHorizontal: 10,
+                  flexDirection: "row",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+                onPress={() => router.push(`/(screens)/AddProduct`)}
+              >
+                <Ionicons name="add-sharp" size={26} color={Colors.White} />
+                <Text
+                  style={{
+                    textAlign: "center",
+                    color: Colors.White,
+                    fontSize: 16,
+                  }}
+                >
+                  Add Product
+                </Text>
+              </TouchableOpacity>
+            ) : null} */}
+          </View>
+        )}
       </View>
 
       {/* end of code  */}

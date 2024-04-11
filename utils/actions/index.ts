@@ -228,49 +228,34 @@ const LikeAndUnlikeProduct = async (id: string) => {
 const fetchAllShops = async (next: (shops: Ishop[]) => void) => {
   try {
     const query = gql`
-      query GetAllShops {
-        shops {
-          _id
-          name
-          description
-          owner {
-            _id
-            name
-            email
-            avatar {
-              url
-            }
-          }
-          followers {
-            __typename
-            _id
-            name
-            avatar {
-              url
-            }
-          }
-          images {
-            public_id
-            url
-          }
-          address
-          products {
-            _id
-            title
-            description
-            original_price
-            discount_price
-            images {
-              public_id
-              url
-            }
-            category {
-              _id
-            }
-          }
-          createdAt
-        }
+     query GetAllShops {
+  shops {
+    _id
+    name
+    description
+    address
+    owner {
+      name
+      email
+      avatar{
+        url
       }
+      phone_no
+    }
+    followers{
+      _id
+      name
+    }
+    products{
+      _id,
+      title,
+      discount_price,
+      images{
+        url
+      }
+    }
+  }
+}
     `;
 
     await gql_client
