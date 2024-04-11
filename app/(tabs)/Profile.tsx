@@ -1,15 +1,21 @@
 import {
   Alert,
   Image,
+  RefreshControl,
   ScrollView,
   StyleSheet,
   Text,
   TouchableOpacity,
   View,
 } from "react-native";
-import React, { useEffect, useLayoutEffect, useState } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useState,
+} from "react";
 import { LoginAlert } from "@/components";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/redux/Store";
 import {
   Colors,
@@ -22,9 +28,12 @@ import { router, useNavigation } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { AntDesign, Ionicons } from "@expo/vector-icons";
 import { IProduct, Ishop } from "@/types";
+import { fetchAllShops } from "@/utils/actions";
+import { setShops } from "@/redux/reducers/shop.reducers";
 
 const Profile = () => {
   const navigation = useNavigation();
+  const dispatch = useDispatch();
   const authState = useSelector((state: RootState) => state.user.authState);
   const details: any = useSelector((state: RootState) => state.user.details);
   const allShops = useSelector((state: RootState) => state.shop.shops);
@@ -37,6 +46,8 @@ const Profile = () => {
   const [authType, setauthType] = useState(authState);
 
   const [toggle, settoggle] = useState(false);
+
+  const [refreshing, setrefreshing] = useState(false);
 
   // handle logout function
   const handlelogout = () => {
@@ -65,6 +76,7 @@ const Profile = () => {
         (s: Ishop) => s.owner?.email?.toString() === details.email.toString()
       );
       setshop(userShop);
+
       navigation.setOptions({
         headerTitle: `${shop?.name}`,
         headerRight: () => (
@@ -101,6 +113,17 @@ const Profile = () => {
     }, []);
   }
 
+  const refetchAllshop = async () => {
+    await fetchAllShops((shops: Ishop[]) => {
+      dispatch(setShops(shops));
+    });
+  };
+  // handle on refress
+
+  const onRefresh = useCallback(() => {
+    setrefreshing(true);
+    refetchAllshop().then(() => setrefreshing(false));
+  }, []);
   return authType ? (
     <>
       {shopOwner === true ? (
@@ -108,13 +131,120 @@ const Profile = () => {
           <ScrollView
             contentContainerStyle={{ alignItems: "center" }}
             showsVerticalScrollIndicator={false}
+            refreshControl={
+              <RefreshControl
+                refreshing={refreshing}
+                onRefresh={onRefresh}
+                colors={["#9Bd35A", "red", "blue"]}
+                // Android offset for RefreshControl
+                progressViewOffset={10}
+              />
+            }
           >
-            <View style={{ borderWidth: 2, width: "95%" }}>
-              {shop?.images?.length! > 0 ? (
-                <Image source={{ uri: shop?.images![0].url }} />
+            <RefreshControl
+              title="Refreshing..."
+              titleColor={Colors.Primary}
+              refreshing={refreshing}
+              tintColor={Colors.Primary}
+              onRefresh={onRefresh}
+            />
+            <View
+              style={{
+                width: "95%",
+                alignItems: "center",
+                backgroundColor: Colors.White,
+                borderRadius: 8,
+              }}
+            >
+              {shop?.images ? (
+                <View
+                  style={{
+                    width: "100%",
+                    alignItems: "center",
+                  }}
+                >
+                  <Image
+                    style={{
+                      width: "100%",
+                      height: 250,
+                      resizeMode: "cover",
+                    }}
+                    source={{ uri: shop?.images![0].url }}
+                  />
+                </View>
               ) : (
-                <Ionicons name="storefront-outline" />
+                <View
+                  style={{
+                    borderBottomWidth: 1,
+                    width: "100%",
+                    alignItems: "center",
+                  }}
+                >
+                  <Ionicons
+                    name="storefront-outline"
+                    size={250}
+                    color={Colors.Primary}
+                  />
+                </View>
               )}
+
+              {/* shop owner details  */}
+
+              <Image
+                style={{
+                  width: 100,
+                  height: 100,
+                  borderWidth: 2,
+                  borderColor: Colors.Primary,
+                  borderRadius: 55,
+                  position: "absolute",
+                  left: 15,
+                  top: "40%",
+                }}
+                source={{ uri: shop?.owner?.avatar.url }}
+              />
+
+              {/* Other Details  */}
+
+              <View
+                style={{
+                  width: "100%",
+                  marginTop: 40,
+                  paddingHorizontal: 10,
+                }}
+              >
+                <Text
+                  style={{
+                    fontSize: 35,
+                    fontWeight: "600",
+                    color: Colors.Primary,
+                  }}
+                >
+                  {shop?.name}
+                </Text>
+
+                {/* Shop address  */}
+
+                <Text style={{ fontWeight: "600", color: "#444" }}>
+                  {shop?.address}
+                </Text>
+
+                {/* Shop Descriton  */}
+                <Text
+                  style={{
+                    color: Colors.Primary,
+                    fontWeight: "600",
+                    fontSize: 18,
+                    marginTop: 15,
+                    marginBottom: 10,
+                  }}
+                >
+                  About the shop
+                </Text>
+                <Text style={{ fontWeight: "600", marginBottom: 10 }}>
+                  {shop?.description}
+                </Text>
+              </View>
             </View>
             {/* Shop Profile Card  */}
             {toggle && (
@@ -143,7 +273,11 @@ const Profile = () => {
                     justifyContent: "center",
                     gap: 8,
                   }}
-                  onPress={() => router.push(`/(screens)/EditShop`)}
+                  onPress={() =>
+                    router.push(
+                      `/(screens)/EditShop?shopId=${shop?._id}` as any
+                    )
+                  }
                 >
                   <AntDesign name="edit" color={Colors.Link} size={20} />
                   <Text style={{ fontWeight: "600", color: Colors.Link }}>
@@ -187,12 +321,13 @@ const Profile = () => {
             >
               {/* Shops Products  */}
 
-              <View
+              <TouchableOpacity
                 style={{
                   backgroundColor: Colors.LightBg,
                   width: "40%",
                   padding: 10,
                   alignItems: "center",
+                  borderRadius: 8,
                 }}
               >
                 <Text
@@ -204,17 +339,25 @@ const Profile = () => {
                 <Text style={{ color: Colors.Primary, fontSize: 28 }}>
                   {shop?.products?.length}
                 </Text>
-              </View>
+              </TouchableOpacity>
 
               {/* Shops Followers  */}
 
-              <View
+              <TouchableOpacity
                 style={{
                   backgroundColor: Colors.LightBg,
                   width: "40%",
                   padding: 10,
                   alignItems: "center",
+                  borderRadius: 8,
                 }}
+                onPress={() =>
+                  router.push(
+                    `/(screens)/ShopFollowersList?data=${JSON.stringify(
+                      shop?.followers
+                    )}` as any
+                  )
+                }
               >
                 <Text
                   style={{ fontSize: 18, fontWeight: "600", marginBottom: 20 }}
@@ -225,7 +368,7 @@ const Profile = () => {
                 <Text style={{ color: Colors.Primary, fontSize: 28 }}>
                   {shop?.followers?.length}
                 </Text>
-              </View>
+              </TouchableOpacity>
             </View>
 
             {/* IMP CTA  */}

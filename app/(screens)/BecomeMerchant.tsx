@@ -23,7 +23,7 @@ import { setShops } from "@/redux/reducers/shop.reducers";
 const BecomeMerchant = () => {
   const dispatch = useDispatch();
   const AllShops: any = useSelector((state: RootState) => state.shop.shops);
-  const user:any = useSelector((state:RootState)=> state.user.details); 
+  const user: any = useSelector((state: RootState) => state.user.details);
   const navigation = useNavigation();
   const [name, setname] = useState("");
   const [descrition, setdescrition] = useState("");
@@ -33,7 +33,7 @@ const BecomeMerchant = () => {
   const [city, setcity] = useState("");
   const [links, setlinks] = useState("");
   const [img, setimg] = useState("");
-  const [Images, setImages] = useState({ public_id: "", url: "" });
+  const [Images, setImages] = useState([{ public_id: "", url: "" }]);
 
   const handleImgaePick = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
@@ -69,7 +69,7 @@ const BecomeMerchant = () => {
             public_id: data.public_id,
             url: data.secure_url,
           };
-          setImages(Avatar);
+          setImages((prev) => [...prev, Avatar]);
         })
         .catch((error: any) => {
           setloading(false);
@@ -106,7 +106,7 @@ const BecomeMerchant = () => {
           name: name,
           description: descrition,
           address: address,
-          images: [Images],
+          images: Images,
         },
       };
       setloading(true);
@@ -125,19 +125,9 @@ const BecomeMerchant = () => {
         })
         .catch((e: any) => {
           setloading(false);
-          const errorMessage = e.response.errors[0].message;
-          const duplicateKeyPattern =
-            /E11000 duplicate key error collection: .+ index: .+ dup key: \{ name: "(.+)" \}/;
-          const match = errorMessage.match(duplicateKeyPattern);
-          if (match) {
-            const duplicateName = match[1];
-            return Alert.alert(
-              "Error",
-              `The name "${duplicateName}" already exists.`
-            );
-          } else {
+
             return "An unknown duplicate key error occurred.";
-          }
+          
         });
     }
   };

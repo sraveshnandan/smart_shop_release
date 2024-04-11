@@ -37,7 +37,6 @@ const Shopdetails = (props: Props) => {
   const [owner, setowner] = useState(false);
 
   const handleFollowState = async (shopId: string) => {
-    console.log(shop);
     if (authState) {
       setloading(true);
       console.log("Follow button Pressed");
@@ -97,23 +96,16 @@ const Shopdetails = (props: Props) => {
     );
     setshop(st);
 
-    if (user) {
-      const fIndex = st?.followers?.findIndex(
-        (s: IUser) => s._id.toString() === user._id.toString()
-      );
-      if (fIndex !== -1) {
-        setfollowed(true);
-      }
-      if (user?._id.toString() === shop?.owner?._id.toString()) {
-        setowner(true);
-      }
+    const fIndex = st?.followers?.findIndex(
+      (s: IUser) => s._id.toString() === user._id.toString()
+    );
+    if (fIndex !== -1) {
+      setfollowed(true);
+    }
+    if (user?._id.toString() === shop?.owner?._id.toString()) {
+      setowner(true);
     }
   }, [user, allShops]);
-
-  useEffect(() => {
-    console.log(shop);
-  }, [allShops]);
-
   return loading ? (
     <View>
       <ActivityIndicator size={"large"} />
@@ -127,7 +119,7 @@ const Shopdetails = (props: Props) => {
       {/* SHOP DATA  */}
 
       {/* Shop Image  */}
-      {shop && shop.images?.length ? (
+      {shop && shop.images?.length! > 0 ? (
         <View
           style={{
             width: "96%",
@@ -139,7 +131,14 @@ const Shopdetails = (props: Props) => {
             borderRadius: 8,
           }}
         >
-          <Image source={{ uri: shop.images[0].url }} />
+          <Image
+            style={{ width: "100%", height: "100%", resizeMode: "cover" }}
+            source={
+              shop.images?.length! > 0
+                ? { uri: shop?.images![0]!.url }
+                : require("../../assets/images/empty_box.png")
+            }
+          />
         </View>
       ) : (
         <View

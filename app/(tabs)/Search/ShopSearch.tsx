@@ -52,7 +52,9 @@ const Search = () => {
     navigation.setOptions({
       headerShown: true,
       headerTitle: "Search Shops",
-      headerBackTitleVisible: false,
+      headerBackTitleVisible: true,
+
+      headerLeft:()=><Ionicons name="chevron-back-circle-outline" size={25} style={{marginRight:25}} onPress={()=> router.push("/(tabs)/Search/")}/>
     });
 
     setProducts(AllProducts);

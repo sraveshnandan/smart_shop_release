@@ -14,13 +14,12 @@ import { Colors } from "@/constants";
 import { router } from "expo-router";
 
 const ShopLists = () => {
-  const allShops: any = useSelector((state: RootState) => state.shop.shops);
   const user: IUser | any = useSelector(
     (state: RootState) => state.user.details
   );
 
   const [shops, setshops] = useState();
-  console.log(user);
+  console.log(JSON.stringify(user,null,1));
   return (
     <ScrollView
       showsVerticalScrollIndicator={false}

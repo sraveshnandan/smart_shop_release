@@ -246,9 +246,7 @@ export default function Login() {
           </View>
           {/* Forgot password Field  */}
           <TouchableOpacity
-            onPress={() =>
-              Alert.alert("Info", "We are currentlly working on this feature")
-            }
+            onPress={() => router.push(`/(auth)/forgotPassword`)}
           >
             <Text style={styles.link}>Forgot Password</Text>
           </TouchableOpacity>

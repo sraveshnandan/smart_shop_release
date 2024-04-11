@@ -1,8 +1,10 @@
 import {
+  Image,
   RefreshControl,
   ScrollView,
   StyleSheet,
   Text,
+  TouchableOpacity,
   View,
 } from "react-native";
 import React, {
@@ -70,17 +72,14 @@ const index = () => {
       headerLeft: () => (
         <View
           style={{
-            backgroundColor: Colors.Bg,
-            marginLeft: 10,
-            padding: 10,
+            marginLeft: 5,
             borderRadius: 6,
           }}
         >
-          <Text
-            style={{ color: Colors.White, fontSize: 18, fontWeight: "600" }}
-          >
-            Smart shop
-          </Text>
+          <Image
+            style={{ width: 200, height: 55, resizeMode: "contain", marginVertical:5 }}
+            source={require("../../assets/images/appIcon.png")}
+          />
         </View>
       ),
       headerRight: () => (
@@ -108,13 +107,26 @@ const index = () => {
     setWishlistData();
   }, [allProducts, details]);
   return (
-    <ScrollView style={{ flex: 1 }}>
+    <ScrollView
+      style={{ flex: 1 }}
+      refreshControl={
+        <RefreshControl
+          refreshing={refressing}
+          onRefresh={onRefress}
+          colors={["#9Bd35A", "#689F38"]}
+          // Android offset for RefreshControl
+          progressViewOffset={10}
+        />
+      }
+    >
       <RefreshControl
         tintColor={Colors.Primary}
         title="Refreshing..."
         titleColor={Colors.Primary}
         refreshing={refressing}
         onRefresh={onRefress}
+        colors={["#9Bd35A", "#689F38"]}
+        progressViewOffset={10}
       />
       {/* Image Slider  */}
       <Slider
@@ -144,15 +156,20 @@ const index = () => {
         {allShops && allShops.length > 0 ? (
           <>
             {allShops.map((s: Ishop, index: number) => (
-              <View
+              <TouchableOpacity
                 key={index}
                 style={{
                   width: screenWidth * 0.8,
                   marginRight: 10,
                   borderRadius: 6,
                   backgroundColor: Colors.White,
-                  padding: 8,
+                  padding: 10,
                 }}
+                onPress={() =>
+                  router.push(
+                    `/(screens)/Shopdetails?shopId=${s._id}&name=${s.name}` as any
+                  )
+                }
               >
                 {/* Shop Image  */}
 
@@ -162,13 +179,34 @@ const index = () => {
                     justifyContent: "center",
                     backgroundColor: Colors.LightBg,
                     borderRadius: 4,
+                    overflow: "hidden",
                   }}
                 >
-                  <Ionicons
-                    name="storefront-sharp"
-                    size={150}
-                    color={Colors.Primary}
-                  />
+                  {s.images?.length! > 0 ? (
+                    <Image
+                      style={{
+                        width: "100%",
+                        height: 250,
+                        resizeMode: "cover",
+                      }}
+                      source={{ uri: s.images![0].url }}
+                    />
+                  ) : (
+                    <View
+                      style={{
+                        width: "100%",
+                        height: 250,
+                        alignItems: "center",
+                        justifyContent: "center",
+                      }}
+                    >
+                      <Ionicons
+                        name="storefront-outline"
+                        size={250}
+                        color={Colors.Primary}
+                      />
+                    </View>
+                  )}
                 </View>
 
                 {/* Shop Details  */}
@@ -179,65 +217,8 @@ const index = () => {
                   <Text style={{ fontSize: 18, color: "#444" }}>
                     {s.address?.substring(0, 25)}...
                   </Text>
-                  {/* Shop stats  */}
-
-                  <View
-                    style={{ flexDirection: "row", width: "100%", gap: 10 }}
-                  >
-                    <View
-                      style={{
-                        backgroundColor: Colors.LightBg,
-                        width: "30%",
-                        paddingVertical: 15,
-                        borderRadius: 8,
-                        marginTop: 4,
-                      }}
-                    >
-                      <Text
-                        style={{ color: Colors.Primary, textAlign: "center" }}
-                      >
-                        Products
-                      </Text>
-                      <Text
-                        style={{
-                          fontSize: 24,
-                          color: "#000",
-                          textAlign: "center",
-                        }}
-                      >
-                        {s.products?.length}
-                      </Text>
-                    </View>
-
-                    <View
-                      style={{
-                        backgroundColor: Colors.LightBg,
-                        width: "30%",
-                        paddingVertical: 15,
-                        borderRadius: 8,
-                        marginTop: 4,
-                      }}
-                    >
-                      <Text
-                        style={{ color: Colors.Primary, textAlign: "center" }}
-                      >
-                        followers
-                      </Text>
-                      <Text
-                        style={{
-                          fontSize: 24,
-                          color: "#000",
-                          textAlign: "center",
-                        }}
-                      >
-                        {s.followers?.length}
-                      </Text>
-                    </View>
-
-                    {/* Last View  */}
-                  </View>
                 </View>
-              </View>
+              </TouchableOpacity>
             ))}
           </>
         ) : null}

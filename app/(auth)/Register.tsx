@@ -131,7 +131,7 @@ export default function Register() {
                 const res: any = await gql_client.request(query, variables);
 
                 // Handle the response
-                
+
                 if (res.createUser) {
                   setloading(false);
                   Alert.alert("Success", "Account created successfully.");
@@ -489,7 +489,7 @@ export default function Register() {
             </View>
             {/* Forgot password Field  */}
             <TouchableOpacity
-              onPress={() => navigation.navigate("main" as never)} // ye as never mat linkhna tum ye sirf typescript ke liye hai.
+              onPress={() => router.push(`/(auth)/forgotPassword`)}
             >
               <Text style={styles.link}>Forgot Password</Text>
             </TouchableOpacity>

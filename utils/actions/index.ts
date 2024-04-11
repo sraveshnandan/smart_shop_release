@@ -104,25 +104,27 @@ const fetchProfile = () => {
     console.log("token", res);
     if (res !== null) {
       const query = gql`
-        query FetchProfile {
+        query ProfileFunction {
           profile {
             message
             user {
               _id
-              email
               name
-              avatar {
-                public_id
-                url
-              }
-              phone_no
-              isAdmin
-              isShopOwner
-              createdAt
+              email
               shops {
                 _id
+                name
+                images {
+                  url
+                }
+                address
+                followers {
+                  _id
+                }
+                products {
+                  _id
+                }
               }
-              updatedAt
             }
           }
         }
@@ -228,34 +230,42 @@ const LikeAndUnlikeProduct = async (id: string) => {
 const fetchAllShops = async (next: (shops: Ishop[]) => void) => {
   try {
     const query = gql`
-     query GetAllShops {
-  shops {
-    _id
-    name
-    description
-    address
-    owner {
-      name
-      email
-      avatar{
-        url
+      query GetAllShops {
+        shops {
+          _id
+          name
+          description
+          address
+          images {
+            url
+          }
+          owner {
+            _id
+            name
+            email
+            avatar {
+              url
+            }
+            phone_no
+          }
+          followers {
+            _id
+            name
+            avatar {
+              url
+            }
+            email
+          }
+          products {
+            _id
+            title
+            discount_price
+            images {
+              url
+            }
+          }
+        }
       }
-      phone_no
-    }
-    followers{
-      _id
-      name
-    }
-    products{
-      _id,
-      title,
-      discount_price,
-      images{
-        url
-      }
-    }
-  }
-}
     `;
 
     await gql_client

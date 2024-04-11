@@ -7,11 +7,11 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import React, { useEffect, useLayoutEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Colors } from "@/constants";
 import { getPercentage, gql_client, token } from "@/utils";
-import { Ionicons } from "@expo/vector-icons";
-import { IProduct, IUser } from "@/types";
+import { AntDesign, Ionicons } from "@expo/vector-icons";
+import { IProduct, IUser, Ishop } from "@/types";
 import { router } from "expo-router";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/redux/Store";
@@ -21,9 +21,8 @@ import { gql } from "graphql-request";
 const ScreenWidth = Dimensions.get("screen").width;
 const ProductCard = ({ p }: { p: IProduct }) => {
   const dispatch = useDispatch();
-  const AllProduct: any = useSelector(
-    (state: RootState) => state.product.products
-  );
+
+  // Some redux states
   const details: any = useSelector((state: RootState) => state.user.details);
   const AllUser: any = useSelector((state: RootState) => state.user.users);
   const authState: any = useSelector(
@@ -32,6 +31,10 @@ const ProductCard = ({ p }: { p: IProduct }) => {
   const AllWishlist: any = useSelector(
     (state: RootState) => state.user.wishlist
   );
+
+  const allShop: any = useSelector((state: RootState) => state.shop.shops);
+
+  // Normal UseState
   const [liked, setliked] = useState<boolean>(false);
   const [followed, setfollowed] = useState(false);
   const [owner, setowner] = useState<IUser | undefined>();
@@ -40,7 +43,7 @@ const ProductCard = ({ p }: { p: IProduct }) => {
   const handleLike = async () => {
     if (authState) {
       if (!liked) {
-        console.log("function may start.");
+        console.log(" Like function invoked.");
         LikeAndUnlikeProduct(p._id);
         dispatch(addToWishlist({ ...p }));
         setliked((prev) => !prev);
@@ -53,6 +56,9 @@ const ProductCard = ({ p }: { p: IProduct }) => {
   };
 
   const handleFollow = async () => {
+    if (!authState) {
+      return Alert.alert("Warning", "Please login to perform this action.");
+    }
     const query = gql`
       mutation FOLLOWANDUNFOLLOWSHOP($SHOPID: ID!) {
         followShop(shopId: $SHOPID)
@@ -82,15 +88,25 @@ const ProductCard = ({ p }: { p: IProduct }) => {
       (prd: IProduct) => prd._id.toString() === p._id.toString()
     );
     if (ind !== -1) {
-      console.log("Liked");
       setliked(true);
     }
     const pOwner = AllUser.find(
       (data: IUser) => data._id.toString() === p?.owner?.owner?._id.toString()
     );
     setowner(pOwner);
-  }, [AllWishlist, details]);
+    // Handling followed state
+    const pshop: Ishop = allShop.find(
+      (s: Ishop) => s._id.toString() === p.owner._id.toString()
+    );
 
+    const isFollowed = pshop.followers?.find(
+      (u: IUser) => u._id.toString() === details._id.toString()
+    );
+
+    if (isFollowed) {
+      return setfollowed(true);
+    }
+  }, [AllWishlist, details, followed]);
   return (
     <View style={styles.productCard}>
       {/* Store Detrails  */}
@@ -100,7 +116,7 @@ const ProductCard = ({ p }: { p: IProduct }) => {
           flexDirection: "row",
           alignItems: "center",
           justifyContent: "space-between",
-          paddingHorizontal: 10,
+          paddingHorizontal: 5,
           paddingVertical: 5,
           borderBottomWidth: 2,
           marginBottom: 10,
@@ -127,18 +143,24 @@ const ProductCard = ({ p }: { p: IProduct }) => {
               size={28}
             />
           )}
-          <Text style={{ fontSize: 18, fontWeight: "600" }}>
-            {p?.owner?.name}
-          </Text>
+          <View>
+            <Text style={{ fontSize: 18, fontWeight: "600" }}>
+              {p?.owner?.name?.substring(0, 15)}...
+            </Text>
+            <Text style={{ fontSize: 10, fontWeight: "600" }}>
+              {p.owner?.address}
+            </Text>
+          </View>
         </View>
 
         {p.owner.owner?._id === details._id ? (
           <View style={{ alignItems: "center", flexDirection: "row", gap: 15 }}>
-            <TouchableOpacity>
-              <Ionicons name="trash-sharp" size={25} color={"red"} />
-            </TouchableOpacity>
-            <TouchableOpacity>
-              <Ionicons name="pencil-sharp" size={25} color={"red"} />
+            <TouchableOpacity
+              onPress={() =>
+                router.push(`/(screens)/EditProduct?data=${p._id}` as any)
+              }
+            >
+              <AntDesign name="edit" size={25} color={Colors.Primary} />
             </TouchableOpacity>
           </View>
         ) : (

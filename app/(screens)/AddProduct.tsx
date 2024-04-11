@@ -25,12 +25,11 @@ import { gql } from "graphql-request";
 import { gql_client, token } from "@/utils";
 import { setProducts } from "@/redux/reducers/product.reducer";
 import { router } from "expo-router";
-import { IProduct } from "@/types";
+import { IProduct, Ishop } from "@/types";
 
 const AddProduct = () => {
   const dispatch = useDispatch();
   const user: any = useSelector((state: RootState) => state.user.details);
-  const AllProduct = useSelector((state: RootState) => state.product.products);
   const AllCategory = useSelector((state: RootState) => state.product.category);
   const AllShops: any = useSelector((state: RootState) => state.shop.shops);
   const [title, settitle] = useState("");
@@ -45,18 +44,11 @@ const AddProduct = () => {
   ]);
   const [uri, seturi] = useState<string[]>([]);
   const [category, setcategory] = useState<string[] | []>([]);
-
   const [modelOpen, setmodelOpen] = useState(false);
   const [dummyProduct, setdummyProduct] = useState({});
   const [loading, setloading] = useState(false);
-  const [shopOwner, setshopOwner] = useState<string>(
-    AllShops?.filter(
-      (s: any) => s.owner._id.toString() === user._id.toString()
-    )[0]._id
-  );
-
+  const [shopOwner, setshopOwner] = useState<string>();
   // Image selection function
-
   const handleImagePress = async () => {
     const { status } = await ImagePicker.getCameraPermissionsAsync();
     if (status === "undetermined" || status === "denied") {
@@ -79,35 +71,26 @@ const AddProduct = () => {
       }
     }
   };
-
   // handling category change
   const handlecategorySelect = (cat: string[]) => {
     setcategory(cat);
     console.log("hi real one ", cat);
   };
-
   // handle extra fields operations
-
   const handleChangeText = (text: string, index: number, field: any) => {
     const newData: any = [...extras];
     newData[index][field] = text;
     setextras(newData);
   };
-
   const handleAddField = () => {
     setextras([...extras, { name: "", value: "" }]);
   };
-
   const handleRemoveField = (index: number) => {
     const newData = [...extras];
     newData.splice(index, 1);
     setextras(newData);
   };
-
-  // final useLayoutEffect
-
   // handle preview function
-
   const handlepreviewfunction = () => {
     console.log("Preview function started.");
     // Input validation
@@ -142,7 +125,6 @@ const AddProduct = () => {
     setdummyProduct(data);
     setmodelOpen(true);
   };
-
   const handleProductUpload = async () => {
     setloading(true);
     uploadImagesToCloudinary(uri)
@@ -232,9 +214,11 @@ const AddProduct = () => {
       });
   };
 
-  // Final UselayoutEffect
   useLayoutEffect(() => {
-    console.log("original owner", shopOwner);
+    const userShop = AllShops.find(
+      (s: Ishop) => s.owner?._id.toString() === user._id.toString()
+    );
+    setshopOwner(userShop._id);
   }, []);
 
   // Final return satement
