@@ -157,7 +157,8 @@ const AddProduct = () => {
               .request(query, variables)
               .then((resp: any) => {
                 if (resp.deleteProduct) {
-                  return Alert.alert("Success", `${resp.deleteProduct}`);
+                   Alert.alert("Success", `${resp.deleteProduct}`);
+                   return router.push(`/(tabs)/`)
                 }
               })
               .catch((err: any) => {

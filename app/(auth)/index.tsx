@@ -179,8 +179,7 @@ export default function Login() {
         justifyContent: "center",
         borderWidth: 2,
       }}
-      source={require("../../assets/images/icon.png")}
-      blurRadius={4}
+      source={require("../../assets/images/splash.png")}
       resizeMode="cover"
       height={screenHeight}
       width={screenWidth}

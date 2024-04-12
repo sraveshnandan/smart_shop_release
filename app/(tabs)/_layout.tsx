@@ -21,7 +21,7 @@ const StackLayout = () => {
           tabBarIcon: ({ color, focused }) => (
             <MaterialCommunityIcons
               name={focused ? "home" : "home-outline"}
-              size={36}
+              size={25}
               color={color}
             />
           ),
@@ -34,7 +34,7 @@ const StackLayout = () => {
           tabBarLabel: "Search",
           headerShown:false,
           tabBarIcon: ({ color }) => (
-            <Ionicons name="search-sharp" size={25} color={color} />
+            <Ionicons name="search-sharp" size={20} color={color} />
           ),
         }}
       />
@@ -48,7 +48,7 @@ const StackLayout = () => {
           tabBarIcon: ({ color, focused }) => (
             <Ionicons
               name={focused ? "cart-sharp" : "cart-outline"}
-              size={25}
+              size={20}
               color={color}
             />
           ),
@@ -64,7 +64,7 @@ const StackLayout = () => {
           tabBarIcon: ({ color, focused }) => (
             <Ionicons
               name={focused ? "person-sharp" : "person-outline"}
-              size={25}
+              size={20}
               color={color}
             />
           ),

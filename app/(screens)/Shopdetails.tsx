@@ -69,26 +69,6 @@ const Shopdetails = (props: Props) => {
   useLayoutEffect(() => {
     navigation.setOptions({
       headerTitle: `${params.name}`,
-      headerRight: () => (
-        <TouchableOpacity
-          style={[
-            {
-              backgroundColor: Colors.Primary,
-              paddingVertical: 8,
-              paddingHorizontal: 10,
-              borderRadius: 6,
-            },
-            followed ? { backgroundColor: "#222" } : {},
-          ]}
-          onPress={() => handleFollowState(shop?._id!)}
-        >
-          <Text
-            style={{ color: "#fff", fontWeight: "600", textAlign: "center" }}
-          >
-            {followed ? "Un follow" : "follow"}
-          </Text>
-        </TouchableOpacity>
-      ),
     });
 
     const st = allShops?.find(

@@ -148,6 +148,7 @@ const Profile = () => {
               tintColor={Colors.Primary}
               onRefresh={onRefresh}
             />
+            {/* SHop Profile Card  */}
             <View
               style={{
                 width: "95%",
