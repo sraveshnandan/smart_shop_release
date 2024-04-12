@@ -98,11 +98,7 @@ const Profile = () => {
               borderRadius: 6,
             }}
           >
-            <Ionicons
-              onPress={() => router.push(`/(auth)/forgotPassword`)}
-              name="storefront-sharp"
-              size={25}
-            />
+            <Ionicons name="storefront-sharp" size={25} />
           </View>
         ),
       });

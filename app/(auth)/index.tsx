@@ -166,10 +166,9 @@ export default function Login() {
     AsyncStorage.getItem("token").then((res: any) => {
       if (res) {
         fetchProfile();
-      } else {
-        return;
       }
     });
+
     return () => {};
   }, []);
   return loading ? (

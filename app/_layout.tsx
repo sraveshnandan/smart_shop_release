@@ -2,9 +2,7 @@ import { RootState, store } from "@/redux/Store";
 import { setAllCategory, setProducts } from "@/redux/reducers/product.reducer";
 import { setShops } from "@/redux/reducers/shop.reducers";
 import {
-  addToWishlist,
-  bulkAddWishlist,
-  setAllUsers,
+  setAllUsers
 } from "@/redux/reducers/user.reducer";
 import { IProduct, IUser } from "@/types";
 import {
@@ -54,7 +52,7 @@ const RootLayoutNav = () => {
     });
   };
   useEffect(() => {
-      setAllData();
+    setAllData();
   }, []);
   return (
     <Stack screenOptions={{ headerShown: false }}>
