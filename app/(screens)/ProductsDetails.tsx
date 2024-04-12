@@ -7,15 +7,13 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import React, {
-  useEffect, useState
-} from "react";
+import React, { useEffect, useState } from "react";
 import { router, useLocalSearchParams, useNavigation } from "expo-router";
 import { useSelector } from "react-redux";
-import { IProduct, Ishop } from "@/types";
+import { IProduct, IUser, Ishop } from "@/types";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Slider } from "@/components";
-import { Colors } from "@/constants";
+import { Colors, screenWidth } from "@/constants";
 import { getPercentage } from "@/utils";
 import { RootState } from "@/redux/Store";
 const ScreenWidth = Dimensions.get("screen").width;
@@ -24,21 +22,28 @@ const Productpage = () => {
   const navigation = useNavigation();
   const Allproducts = useSelector((state: RootState) => state.product.products);
   const details: any = useSelector((state: RootState) => state.user.details);
-  const [owner, setowner] = useState<Ishop | null>(null);
+  const allshop: any = useSelector((state: RootState) => state.shop.shops);
+  const [shop, setshop] = useState<Ishop | null>(null);
   const [product, setproduct] = useState<IProduct | undefined>(undefined);
   const [pImg, setpImg] = useState<string[] | undefined>([]);
   // Final UseEffect
   useEffect(() => {
-    const p: IProduct[] | undefined = Allproducts?.filter(
+    const p: IProduct[] | any = Allproducts?.filter(
       (p) => p._id.toString() === params.id.toString()
     );
-    p![0].images.forEach((p) => {
+    p![0].images.forEach((p: any) => {
       pImg?.push(p.url!);
     });
     setproduct(p![0]);
-
+    const product: IProduct = p[0];
+    console.log("product owner ", product.owner.owner?._id);
+    const ownershop: IUser = allshop.find(
+      (s: Ishop) => s._id.toString() === product.owner._id.toString()
+    );
+    setshop(ownershop);
     return () => {};
-  }, []);
+  }, [allshop, Allproducts]);
+
   return (
     <SafeAreaView
       style={{
@@ -191,35 +196,106 @@ const Productpage = () => {
               borderRadius: 55,
               borderWidth: 1,
             }}
-            source={
-              owner !== null
-                ? { uri: owner?.owner?.avatar?.url }
-                : require("../../assets/images/user.png")
-            }
+            source={{ uri: shop?.owner?.avatar.url }}
           />
-          <Text style={{ fontSize: 28, fontWeight: "600" }}>
-            {product?.owner?.name}
-          </Text>
-          <Text>{product?.owner?.address}</Text>
-
-          <TouchableOpacity
-            style={{
-              backgroundColor: Colors.Primary,
-              padding: 15,
-              marginVertical: 10,
-              borderRadius: 55,
-            }}
-            onPress={() => {
-              router.push(
-                `/(screens)/ProductsDetails?shopId=${product?.owner?._id}&name=${product?.owner?.name}` as never
-              );
-            }}
-          >
-            <Text style={{ color: Colors.White, fontSize: 18 }}>
-              View all products
-            </Text>
-          </TouchableOpacity>
+          <Text style={{ fontSize: 28, fontWeight: "600" }}>{shop?.name}</Text>
+          <Text>{shop?.address}</Text>
         </View>
+        {/* OtherProduct From shop  */}
+        <Text style={{ marginTop: 20, paddingLeft: 15, fontSize: 25 }}>
+          Other products from {shop?.name}
+        </Text>
+
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          style={{ paddingHorizontal: 20, paddingVertical: 20 }}
+          contentContainerStyle={{ justifyContent: "center" }}
+        >
+          {shop?.products
+            ?.filter(
+              (p: IProduct) => p._id.toString() !== product?._id.toString()
+            )
+            .map((pr: IProduct, index) => (
+              <TouchableOpacity
+                key={index}
+                style={{
+                  width: screenWidth * 0.7,
+                  marginRight: 15,
+                  backgroundColor: Colors.White,
+                  borderRadius: 8,
+                  shadowColor: "#de56",
+                  shadowOpacity: 0.2,
+                  shadowOffset: { width: 10, height: 10 },
+                }}
+                onPress={() =>
+                  router.push(`/(screens)/ProductsDetails?id=${pr._id}` as any)
+                }
+              >
+                <Image
+                  style={{ width: "100%", height: 180, resizeMode: "contain" }}
+                  source={{ uri: pr.images[0].url }}
+                />
+                {/* Product details  */}
+                <View
+                  style={{
+                    width: "100%",
+                    borderTopWidth: 0.4,
+                    borderTopColor: "#999",
+                    overflow: "hidden",
+                  }}
+                >
+                  <Text
+                    style={{
+                      fontSize: 25,
+                      fontWeight: "600",
+                      marginTop: 10,
+                      paddingHorizontal: 10,
+                    }}
+                  >
+                    {pr.title?.substring(0, 20)}...
+                  </Text>
+                  <View
+                    style={{
+                      flexDirection: "row",
+                      alignItems: "center",
+                      marginTop: 8,
+                      justifyContent: "flex-start",
+                      width: "100%",
+                      gap: 5,
+                    }}
+                  >
+                    <Text style={{ fontSize: 28, color: "green" }}>
+                      ₹{pr.discount_price}
+                    </Text>
+
+                    <Text
+                      style={{
+                        fontSize: 18,
+                        color: "red",
+                        textDecorationLine: "line-through",
+                      }}
+                    >
+                      ₹{pr.original_price}
+                    </Text>
+
+                    <Text
+                      style={{
+                        fontSize: 14,
+                        color: "green",
+                      }}
+                    >
+                      {getPercentage(
+                        Number(pr.original_price),
+                        Number(pr.discount_price)
+                      )}
+                      % OFF
+                    </Text>
+                  </View>
+                </View>
+              </TouchableOpacity>
+            ))}
+        </ScrollView>
       </ScrollView>
     </SafeAreaView>
   );

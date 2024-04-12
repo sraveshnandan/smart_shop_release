@@ -172,7 +172,6 @@ const AddProduct = () => {
             }
           }
         `;
-
         const variables = {
           productData: {
             title: title,

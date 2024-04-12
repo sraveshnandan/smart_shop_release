@@ -260,6 +260,7 @@ const fetchAllShops = async (next: (shops: Ishop[]) => void) => {
             _id
             title
             discount_price
+            original_price
             images {
               url
             }

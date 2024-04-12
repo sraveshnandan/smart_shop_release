@@ -77,7 +77,7 @@ const index = () => {
           }}
         >
           <Image
-            style={{ width: 200, height: 55, resizeMode: "contain", marginVertical:5 }}
+            style={{ width: 200, height: 55, resizeMode: "contain" }}
             source={require("../../assets/images/appIcon.png")}
           />
         </View>

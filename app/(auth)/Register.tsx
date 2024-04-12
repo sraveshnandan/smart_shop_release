@@ -427,6 +427,7 @@ export default function Register() {
               style={styles.input}
               onChangeText={setname}
               placeholder="Full name"
+              placeholderTextColor={"#888"}
             />
             {/* Number Input  */}
             <TextInput
@@ -434,12 +435,14 @@ export default function Register() {
               onChangeText={setphone}
               keyboardType="numeric"
               placeholder="+91 91261 26***"
+              placeholderTextColor={"#888"}
             />
             {/* Email Input  */}
             <TextInput
               style={{ ...styles.input, marginTop: 10 }}
               onChangeText={setemail}
               placeholder="Email address"
+              placeholderTextColor={"#888"}
             />
             {/* Password Input  */}
             <View
@@ -457,6 +460,7 @@ export default function Register() {
                 secureTextEntry={hide}
                 placeholder="Password"
                 onChangeText={setpassword}
+                placeholderTextColor={"#888"}
               />
               <Entypo
                 onPress={() => sethide(!hide)}
@@ -480,6 +484,7 @@ export default function Register() {
                 secureTextEntry={hide}
                 placeholder=" Conferm Password"
                 onChangeText={setconfPassword}
+                placeholderTextColor={"#888"}
               />
               <Entypo
                 onPress={() => sethide(!hide)}

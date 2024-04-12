@@ -143,8 +143,30 @@ const AddProduct = () => {
           text: "Yes",
           onPress: () => {
             console.log("User requested to delete product.");
-
             // Delete Product Function
+            const query = gql`
+              mutation deleteProduct($pId: ID!) {
+                deleteProduct(productId: $pId)
+              }
+            `;
+            const variables = {
+              pId: prd?._id,
+            };
+
+            gql_client
+              .request(query, variables)
+              .then((resp: any) => {
+                if (resp.deleteProduct) {
+                  return Alert.alert("Success", `${resp.deleteProduct}`);
+                }
+              })
+              .catch((err: any) => {
+                console.log("error from delete product request", err);
+                return Alert.alert(
+                  "Error",
+                  `Error occured while deleting: ${prd?.title}`
+                );
+              });
           },
         },
       ],

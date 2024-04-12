@@ -5,8 +5,10 @@ import {
   ScrollView,
   Dimensions,
   Text,
-  Image, ImageStyle,
-  ViewStyle
+  Image,
+  ImageStyle,
+  ViewStyle,
+  TouchableOpacity,
 } from "react-native";
 
 const DummyImage = [
@@ -72,6 +74,12 @@ const Slider = ({
     }, [active, Images.length]);
   }
 
+  // handle image click
+
+  const handleImageClick = (index: number) => {
+    return console.log(`${index} image is clicked.`);
+  };
+
   // Main UseEffect
   useEffect(() => {
     if (images === undefined) {
@@ -94,14 +102,15 @@ const Slider = ({
         scrollEventThrottle={16}
       >
         {Images.map((i, index) => (
-          <Image
-            style={[
-              { width: width*0.98, height: height, resizeMode: "stretch" },
-              contentStyle ? contentStyle : null,
-            ]}
-            key={index}
-            source={{ uri: i }}
-          />
+          <TouchableOpacity onPress={() => handleImageClick(index)} key={index}>
+            <Image
+              style={[
+                { width: width * 0.98, height: height, resizeMode: "stretch" },
+                contentStyle ? contentStyle : null,
+              ]}
+              source={{ uri: i }}
+            />
+          </TouchableOpacity>
         ))}
       </ScrollView>
       <View style={styles.pagination}>
@@ -127,7 +136,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     position: "absolute",
     bottom: -15,
-    left:5,
+    left: 5,
     alignSelf: "flex-start",
   },
 });

@@ -98,7 +98,11 @@ const Profile = () => {
               borderRadius: 6,
             }}
           >
-            <Ionicons name="storefront-sharp" size={25} />
+            <Ionicons
+              onPress={() => router.push(`/(auth)/forgotPassword`)}
+              name="storefront-sharp"
+              size={25}
+            />
           </View>
         ),
       });
@@ -273,11 +277,12 @@ const Profile = () => {
                     justifyContent: "center",
                     gap: 8,
                   }}
-                  onPress={() =>
+                  onPress={() => {
+                    settoggle((prev) => !prev);
                     router.push(
                       `/(screens)/EditShop?shopId=${shop?._id}` as any
-                    )
-                  }
+                    );
+                  }}
                 >
                   <AntDesign name="edit" color={Colors.Link} size={20} />
                   <Text style={{ fontWeight: "600", color: Colors.Link }}>

@@ -1,4 +1,4 @@
-import { Colors } from "@/constants";
+import { Colors, screenHeight, screenWidth } from "@/constants";
 import { useEffect, useState } from "react";
 import { Entypo } from "@expo/vector-icons";
 import {
@@ -20,8 +20,20 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { gql_client } from "@/utils";
 import { router, useNavigation } from "expo-router";
 import { useDispatch, useSelector } from "react-redux";
-import { setAuthState, setUserData } from "@/redux/reducers/user.reducer";
+import {
+  setAllUsers,
+  setAuthState,
+  setUserData,
+} from "@/redux/reducers/user.reducer";
 import { RootState } from "@/redux/Store";
+import {
+  FetchAllUsers,
+  fetchAllProducts,
+  fetchAllShops,
+} from "@/utils/actions";
+import { IProduct, IUser, Ishop } from "@/types";
+import { setShops } from "@/redux/reducers/shop.reducers";
+import { setProducts } from "@/redux/reducers/product.reducer";
 
 export default function Login() {
   const dispatch = useDispatch();
@@ -115,12 +127,22 @@ export default function Login() {
         await gql_client
           .setHeader("token", res)
           .request(query)
-          .then((res: any) => {
-            setloading(false);
+          .then(async (res: any) => {
             if (res.profile.user) {
               setloading(false);
+              await fetchAllShops((shops: Ishop[]) => {
+                dispatch(setShops(shops));
+              });
+              await fetchAllProducts((products: IProduct[]) => {
+                dispatch(setProducts(products));
+              });
+              FetchAllUsers((users: IUser[]) => {
+                console.log("setting all  user data");
+                dispatch(setAllUsers(users));
+              });
               dispatch(setAuthState(true));
               dispatch(setUserData({ ...res.profile.user }));
+              setloading(false);
               console.log("navigating to home page.");
               router.replace("/(tabs)/");
             }
@@ -160,6 +182,9 @@ export default function Login() {
       }}
       source={require("../../assets/images/icon.png")}
       blurRadius={4}
+      resizeMode="cover"
+      height={screenHeight}
+      width={screenWidth}
     >
       <ActivityIndicator size={65} />
       <Text
@@ -186,7 +211,7 @@ export default function Login() {
           </TouchableOpacity>
         </View>
 
-        <View style={{ alignItems: "center", paddingVertical: 10 }}>
+        <View style={{ alignItems: "center" }}>
           <Image
             style={styles.icon}
             source={require("../../assets/images/icon.png")} // aur is image path ko bhi
@@ -201,6 +226,7 @@ export default function Login() {
             onChangeText={setemail}
             style={styles.input}
             placeholder="Email address"
+            placeholderTextColor={"#888"}
           />
           {/* Password Input  */}
           <View
@@ -226,6 +252,7 @@ export default function Login() {
               onChangeText={setPassword}
               secureTextEntry={passwordState}
               placeholder="Password"
+              placeholderTextColor={"#888"}
             />
             <View
               style={{
@@ -294,14 +321,12 @@ const styles = StyleSheet.create({
   icon: {
     width: 150,
     height: 150,
-    borderRadius: 39,
-    borderColor: "#de28c9",
-    borderWidth: 4,
-
-    shadowColor: Colors.Primary,
-    resizeMode: "contain",
-    backgroundColor: "#53edaa",
+    padding: 0,
+    resizeMode: "stretch",
     marginHorizontal: "auto",
+    shadowColor: "#4579",
+    shadowOffset: { width: -10, height: -10 },
+    shadowOpacity: 0.6,
   },
   section: {
     padding: 20,

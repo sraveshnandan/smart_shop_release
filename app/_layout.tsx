@@ -22,15 +22,18 @@ export {
   ErrorBoundary,
 } from "expo-router";
 
-export const unstable_settings = {
-  initialRouteName: "(auth)/",
-};
+// export const unstable_settings = {
+//   initialRouteName: "(auth)/",
+// };
 
 // Root Layout Navigations
 
 const RootLayoutNav = () => {
   const dispatch = useDispatch();
   const user: any = useSelector((state: RootState) => state.user.details);
+  const authState: any = useSelector(
+    (state: RootState) => state.user.authState
+  );
   const setAllData = async () => {
     fetchAllProducts((p: IProduct[]) => {
       console.log("Adding All products data.");
@@ -51,7 +54,7 @@ const RootLayoutNav = () => {
     });
   };
   useEffect(() => {
-    setAllData();
+      setAllData();
   }, []);
   return (
     <Stack screenOptions={{ headerShown: false }}>
