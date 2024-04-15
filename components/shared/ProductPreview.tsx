@@ -1,10 +1,9 @@
-import { Dimensions, ScrollView, StyleSheet, Text, View } from "react-native";
+import { ScrollView, Text, View } from "react-native";
 import React, { useEffect } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Slider } from "@/components";
-import { Colors } from "@/constants";
+import { Colors, screenWidth } from "@/constants";
 import { getPercentage } from "@/utils";
-const ScreenWidth = Dimensions.get("screen").width;
 const Productpage = ({ p }: { p: any }) => {
   // Final UseEffect
   useEffect(() => {
@@ -15,11 +14,11 @@ const Productpage = ({ p }: { p: any }) => {
       style={{
         flex: 1,
         alignItems: "center",
-        width: ScreenWidth,
+        width: screenWidth,
       }}
     >
       <ScrollView
-        style={{ width: ScreenWidth }}
+        style={{ width: screenWidth }}
         showsVerticalScrollIndicator={false}
       >
         {/* Product images  */}

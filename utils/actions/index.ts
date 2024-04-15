@@ -313,7 +313,8 @@ const FetchAllUsers = async (next: (users: IUser[]) => void) => {
         console.log(e);
       });
   } catch (error: any) {
-    console.log(error.message);
+    console.log("error  from fetch user ", error);
+    console.log(error.message.split(":")[1]);
   }
 };
 

@@ -553,6 +553,7 @@ const styles = StyleSheet.create({
     fontWeight: "600",
     marginTop: 10,
     color: Colors.Primary,
+    fontFamily: "default",
   },
   icon: {
     width: 150,
@@ -584,6 +585,7 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.LightBg,
     borderRadius: 8,
     alignItems: "center",
+    fontFamily: "default",
   },
   button: {
     width: "100%",
@@ -597,6 +599,7 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: "800",
     color: Colors.White,
+    fontFamily: "default",
   },
   link: {
     color: Colors.Link,
@@ -619,6 +622,7 @@ const styles = StyleSheet.create({
   },
   text: {
     fontSize: 20,
+    fontFamily: "default",
   },
   linkbtnBox: {
     flexDirection: "row",

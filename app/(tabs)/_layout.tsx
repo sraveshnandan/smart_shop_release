@@ -32,7 +32,7 @@ const StackLayout = () => {
         name="Search"
         options={{
           tabBarLabel: "Search",
-          headerShown:false,
+          headerShown: false,
           tabBarIcon: ({ color }) => (
             <Ionicons name="search-sharp" size={20} color={color} />
           ),
@@ -45,6 +45,9 @@ const StackLayout = () => {
         options={{
           tabBarLabel: "Wishlist",
           headerTitle: " Your Wishlist Products",
+          headerTitleStyle: {
+            fontFamily: "default",
+          },
           tabBarIcon: ({ color, focused }) => (
             <Ionicons
               name={focused ? "cart-sharp" : "cart-outline"}
@@ -61,6 +64,9 @@ const StackLayout = () => {
         options={{
           tabBarLabel: "Profile",
           headerTitle: "Profile Page",
+          headerTitleStyle: {
+            fontFamily: "default",
+          },
           tabBarIcon: ({ color, focused }) => (
             <Ionicons
               name={focused ? "person-sharp" : "person-outline"}

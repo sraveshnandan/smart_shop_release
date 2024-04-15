@@ -21,6 +21,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/redux/Store";
 import { setShops } from "@/redux/reducers/shop.reducers";
 import { Ishop } from "@/types";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const BecomeMerchant = () => {
   const dispatch = useDispatch();
@@ -125,22 +126,27 @@ const BecomeMerchant = () => {
 
       console.log("payload is", variables.shopData);
 
-      await gql_client
-        .setHeader("token", token)
-        .request(query, variables)
-        .then((res: any) => {
-          setloading(false);
-          console.log(res);
-          if (res.updateShop) {
-            Alert.alert("Success", `${res.updateShop.message}`);
-            return router.replace(`/(tabs)/Profile`);
-          }
-        })
-        .catch((e: any) => {
-          setloading(false);
-          console.log(e);
-          return Alert.alert("Error", "Something went wrong.");
-        });
+      AsyncStorage.getItem("token").then(async (res: any) => {
+        await gql_client
+          .setHeader("token", res)
+          .request(query, variables)
+          .then((res: any) => {
+            setloading(false);
+            console.log(res);
+            if (res.updateShop) {
+              Alert.alert("Success", `${res.updateShop.message}`);
+              return router.replace(`/(tabs)/Profile`);
+            }
+          })
+          .catch((e: any) => {
+            setloading(false);
+            console.log(e);
+            return Alert.alert("Error", "Something went wrong.");
+          });
+      }).catch((e:any)=>{
+        console.log("error from edit shop page", e)
+        return Alert.alert("Error", "Unable to perform this operation.")
+      })
     }
   };
 
@@ -188,19 +194,27 @@ const BecomeMerchant = () => {
                   right: 4,
                   backgroundColor: Colors.White,
                 }}
-                onPress={()=>{
-                  return Alert.alert("Warning", "Do you want to update shop image.",[
-                    {
-                      text:"NO",
-                      style:"cancel",
-                      onPress:()=>{
-                        return
-                      }
-                    },{
-                      text:"Yes",
-                      onPress:()=> {setImages([])}
-                    },
-                  ],{cancelable:false})
+                onPress={() => {
+                  return Alert.alert(
+                    "Warning",
+                    "Do you want to update shop image.",
+                    [
+                      {
+                        text: "NO",
+                        style: "cancel",
+                        onPress: () => {
+                          return;
+                        },
+                      },
+                      {
+                        text: "Yes",
+                        onPress: () => {
+                          setImages([]);
+                        },
+                      },
+                    ],
+                    { cancelable: false }
+                  );
                 }}
                 name="trash-outline"
               />

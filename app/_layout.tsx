@@ -1,9 +1,7 @@
 import { RootState, store } from "@/redux/Store";
 import { setAllCategory, setProducts } from "@/redux/reducers/product.reducer";
 import { setShops } from "@/redux/reducers/shop.reducers";
-import {
-  setAllUsers
-} from "@/redux/reducers/user.reducer";
+import { setAllUsers } from "@/redux/reducers/user.reducer";
 import { IProduct, IUser } from "@/types";
 import {
   FetchAllUsers,
@@ -11,6 +9,7 @@ import {
   fetchAllShops,
   getAllCategory,
 } from "@/utils/actions";
+import { useFonts } from "expo-font";
 import { Stack } from "expo-router";
 import { useEffect } from "react";
 import { Provider, useDispatch, useSelector } from "react-redux";
@@ -20,18 +19,15 @@ export {
   ErrorBoundary,
 } from "expo-router";
 
-// export const unstable_settings = {
-//   initialRouteName: "(auth)/",
-// };
+export const unstable_settings = {
+  initialRouteName: "(auth)/",
+};
 
 // Root Layout Navigations
 
 const RootLayoutNav = () => {
   const dispatch = useDispatch();
   const user: any = useSelector((state: RootState) => state.user.details);
-  const authState: any = useSelector(
-    (state: RootState) => state.user.authState
-  );
   const setAllData = async () => {
     fetchAllProducts((p: IProduct[]) => {
       console.log("Adding All products data.");
@@ -55,7 +51,7 @@ const RootLayoutNav = () => {
     setAllData();
   }, []);
   return (
-    <Stack screenOptions={{ headerShown: false }}>
+    <Stack initialRouteName="(auth)/" screenOptions={{ headerShown: false }}>
       <Stack.Screen name="(tabs)" />
       <Stack.Screen name="(auth)" />
       <Stack.Screen name="(screens)" />
@@ -65,6 +61,13 @@ const RootLayoutNav = () => {
 
 // Main Layout Function
 const RootLayout = () => {
+  const [loaded, errors] = useFonts({
+    default: require("../assets/fonts/Aldrich.ttf"),
+  });
+
+  if (!loaded && errors) {
+    return;
+  }
   return (
     <Provider store={store}>
       <RootLayoutNav />

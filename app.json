@@ -1,16 +1,16 @@
 {
   "expo": {
-    "name": "smart_shop",
-    "slug": "smart_shop",
+    "name": "Peepal",
+    "slug": "Peepal",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "smart-shop",
+    "scheme": "peepal",
     "userInterfaceStyle": "automatic",
     "splash": {
       "image": "./assets/images/splash.png",
       "resizeMode": "cover",
-      "backgroundColor": "#fff"
+      "backgroundColor": "#ffffff"
     },
     "assetBundlePatterns": [
       "**/*"
@@ -21,15 +21,16 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/images/adaptive-icon.png",
-        "backgroundColor": "#0ab5c0"
+        "foregroundImage": "./assets/images/icon.png",
+        "backgroundColor": "#fff"
       },
+      "package": "com.sravesh.Peepal",
       "permissions": [
-        "android.permission.RECORD_AUDIO",
-        "android.permission.INTERNET",
-        "android.permission.ACCESS_NETWORK_STATE"
-      ],
-      "package": "com.sravesh.smart_shop"
+        "INTERNET",
+        "CAMERA",
+        "READ_EXTERNAL_STORAGE",
+        "WRITE_EXTERNAL_STORAGE"
+      ]
     },
     "web": {
       "bundler": "metro",
@@ -54,7 +55,7 @@
         "origin": false
       },
       "eas": {
-        "projectId": "f304643c-e53c-47d3-ba3e-a314f8297e03"
+        "projectId": "a4f3e35a-58d0-425c-a8d6-e51d2c3c5b10"
       }
     }
   }

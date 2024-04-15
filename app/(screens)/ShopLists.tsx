@@ -6,7 +6,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { RootState } from "@/redux/Store";
 import { IUser, Ishop } from "@/types";
@@ -18,65 +18,79 @@ const ShopLists = () => {
     (state: RootState) => state.user.details
   );
 
-  const [shops, setshops] = useState();
-  console.log(JSON.stringify(user,null,1));
+  const [userData, setuserData] = useState<IUser | undefined>();
+  useEffect(() => {
+    setuserData(user);
+    console.log(user.shops);
+  }, []);
   return (
     <ScrollView
       showsVerticalScrollIndicator={false}
       contentContainerStyle={{ alignItems: "center" }}
-      style={{ borderWidth: 2, flex: 1 }}
+      style={{ flex: 1 }}
     >
       <Text style={{ fontSize: 28, fontWeight: "600", marginBottom: 20 }}>
         Shops, you follow
       </Text>
-      {user && user?.Shops?.length > 0 ? (
+      {user && user?.shops?.length > 0 ? (
         <>
-          {user.Shops.map((s: Ishop, index: number) => (
-            <TouchableOpacity
-              style={{
-                width: "80%",
-                borderWidth: 2,
-                flexDirection: "row",
-                alignItems: "center",
-                gap: 10,
-                backgroundColor: Colors.White,
-                borderRadius: 8,
-                padding: 6,
-              }}
-              onPress={() =>
-                router.push(
-                  `/(screens)/Shopdetails?shopId=${s._id}&name=${s.name}` as any
-                )
-              }
-            >
-              <Image
+          {userData &&
+            userData?.shops?.map((s: Ishop, index: number) => (
+              <TouchableOpacity
+                key={index}
                 style={{
-                  width: 100,
-                  height: 100,
-                  borderWidth: 2,
-                  borderColor: Colors.Primary,
-                  borderRadius: 55,
+                  width: "96%",
+                  flexDirection: "row",
+                  alignItems: "center",
+                  gap: 4,
+                  backgroundColor: Colors.White,
+                  borderRadius: 8,
+                  padding: 6,
+                  overflow: "hidden",
                 }}
-                source={{ uri: s.owner?.avatar.url }}
-              />
-
-              {/* Shop Details  */}
-
-              <Text
-                style={{
-                  fontSize: 28,
-                  fontWeight: "600",
-                  color: Colors.Primary,
-                }}
+                onPress={() =>
+                  router.push(
+                    `/(screens)/Shopdetails?shopId=${s._id}&name=${s.name}` as any
+                  )
+                }
               >
-                {s.name}
-              </Text>
+                <Image
+                  style={{
+                    width: 100,
+                    height: 100,
+                    borderWidth: 2,
+                    borderColor: Colors.Primary,
+                    borderRadius: 55,
+                  }}
+                  source={{ uri: s?.images![0].url }}
+                />
 
-              <Text style={{ fontWeight: "600", color: "#444" }}>
-                {s.address}
-              </Text>
-            </TouchableOpacity>
-          ))}
+                {/* Shop Details  */}
+
+                <View
+                  style={{
+                    flexGrow: 1,
+                    padding: 5,
+                    height: "100%",
+                    width: "60%",
+                  }}
+                >
+                  <Text
+                    style={{
+                      fontSize: 25,
+                      color: Colors.Primary,
+                      fontWeight: "500",
+                    }}
+                  >
+                    {s.name?.substring(0, 15)}...
+                  </Text>
+
+                  <Text style={{ fontWeight: "600", color: "#888" }}>
+                    {s.address?.substring(0, 20)}...
+                  </Text>
+                </View>
+              </TouchableOpacity>
+            ))}
         </>
       ) : (
         <View

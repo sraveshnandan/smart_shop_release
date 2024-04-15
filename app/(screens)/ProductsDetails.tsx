@@ -36,13 +36,16 @@ const Productpage = () => {
     });
     setproduct(p![0]);
     const product: IProduct = p[0];
-    console.log("product owner ", product.owner.owner?._id);
     const ownershop: IUser = allshop.find(
       (s: Ishop) => s._id.toString() === product.owner._id.toString()
     );
     setshop(ownershop);
+
+    navigation.setOptions({
+      headerTitle: `Product Details`,
+    });
     return () => {};
-  }, [allshop, Allproducts]);
+  }, []);
 
   return (
     <SafeAreaView

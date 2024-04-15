@@ -14,6 +14,7 @@ import { Colors } from "@/constants";
 import { Ionicons } from "@expo/vector-icons";
 import { gql } from "graphql-request";
 import { gql_client } from "@/utils";
+import { StatusBar } from "expo-status-bar";
 
 type Props = {};
 
@@ -57,6 +58,7 @@ const ForgotPassword = (props: Props) => {
         }
       })
       .catch((err: any) => {
+        console.log("forgot password function error", err);
         setloading(false);
         return Alert.alert("Error", "Something went wrong.");
       });
@@ -67,7 +69,7 @@ const ForgotPassword = (props: Props) => {
       return Alert.alert("Error", "Invalid OTP.");
     }
     if (userOtp.toString() === serverData.otp.toString()) {
-      setotpstate(prev=> !prev)
+      setotpstate((prev) => !prev);
       return Alert.alert("Success", "OTP matched");
     } else {
       return Alert.alert("Error", "Incorrect OTP.");
@@ -75,9 +77,8 @@ const ForgotPassword = (props: Props) => {
   };
 
   const handleChangePassword = async () => {
-
     if (newPassword !== confNewPassword) {
-      return Alert.alert("Error", "Password not matched, try again.")
+      return Alert.alert("Error", "Password not matched, try again.");
     }
     setloading(true);
     const query = gql`
@@ -100,23 +101,25 @@ const ForgotPassword = (props: Props) => {
         setloading(false);
         if (resp.resetPassword) {
           setmodeOpen((prev) => !prev);
-          return Alert.alert("Success", `${resp.resetPassword}`);
+          Alert.alert("Success", `${resp.resetPassword}`);
+          return router.push(`/(auth)/`);
         }
       })
       .catch((err: any) => {
         setloading(false);
-        console.log(err)
+        console.log(err);
         return Alert.alert("Error", "Something went wrong.");
       });
   };
   useLayoutEffect(() => {
     navigation.setOptions({
-      headerTitle:"Reset your password",
-      headerBackButtonVisible:true
-    })
+      headerTitle: "Reset your password",
+      headerTitleStyle: {
+        fontFamily: "default",
+      },
+      headerBackButtonVisible: true,
+    });
   }, []);
-
-  console.log(serverData);
   return modeOpen ? (
     <Modal
       style={{ paddingVertical: 20 }}
@@ -126,11 +129,11 @@ const ForgotPassword = (props: Props) => {
       <SafeAreaView
         style={{
           flex: 1,
-          borderWidth: 2,
           alignItems: "center",
           paddingHorizontal: 5,
         }}
       >
+        <StatusBar style="inverted" />
         {loading && (
           <View
             style={{
@@ -167,7 +170,14 @@ const ForgotPassword = (props: Props) => {
             color={"red"}
             onPress={() => setmodeOpen((prev) => !prev)}
           />
-          <Text style={{ textAlign: "center", flexGrow: 1, fontSize: 18 }}>
+          <Text
+            style={{
+              textAlign: "center",
+              flexGrow: 1,
+              fontSize: 18,
+              fontFamily: "default",
+            }}
+          >
             Change your password
           </Text>
         </View>
@@ -319,6 +329,7 @@ const ForgotPassword = (props: Props) => {
                 borderRadius: 6,
                 marginVertical: 20,
                 fontWeight: "600",
+                fontFamily: "default",
               }}
               keyboardType="number-pad"
               maxLength={6}
@@ -347,6 +358,7 @@ const ForgotPassword = (props: Props) => {
                   textAlign: "center",
                   color: Colors.White,
                   fontWeight: "600",
+                  fontFamily: "default",
                 }}
               >
                 {loading ? "Please wait..." : " Verify OTP"}
@@ -400,6 +412,7 @@ const ForgotPassword = (props: Props) => {
             fontSize: 25,
             fontWeight: "600",
             marginVertical: 25,
+            fontFamily: "default",
           }}
         >
           Reset your password
@@ -418,6 +431,7 @@ const ForgotPassword = (props: Props) => {
             borderRadius: 6,
             fontSize: 18,
             fontWeight: "600",
+            fontFamily: "default",
           }}
         />
 
@@ -444,6 +458,7 @@ const ForgotPassword = (props: Props) => {
               textAlign: "center",
               fontWeight: "600",
               color: Colors.White,
+              fontFamily: "default",
             }}
           >
             {loading ? "Please wait..." : " Send OTP"}
@@ -462,10 +477,19 @@ const ForgotPassword = (props: Props) => {
             gap: 10,
           }}
         >
-          <Text style={{ fontSize: 16, fontWeight: "500" }}>Back to</Text>
+          <Text
+            style={{ fontSize: 16, fontWeight: "500", fontFamily: "default" }}
+          >
+            Back to
+          </Text>
           <TouchableOpacity onPress={() => router.push(`/(auth)/`)}>
             <Text
-              style={{ color: Colors.Primary, fontSize: 20, fontWeight: "600" }}
+              style={{
+                color: Colors.Primary,
+                fontSize: 20,
+                fontWeight: "600",
+                fontFamily: "default",
+              }}
             >
               Login
             </Text>

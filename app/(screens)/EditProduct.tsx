@@ -17,11 +17,12 @@ import { RootState } from "@/redux/Store";
 import { Colors, screenWidth } from "@/constants";
 import { fetchAllProducts } from "@/utils/actions";
 import { gql } from "graphql-request";
-import { gql_client, token } from "@/utils";
+import { gql_client } from "@/utils";
 import { setProducts } from "@/redux/reducers/product.reducer";
 import { router, useLocalSearchParams, useNavigation } from "expo-router";
 import { IProduct, Ishop } from "@/types";
 import { Ionicons } from "@expo/vector-icons";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const AddProduct = () => {
   const dispatch = useDispatch();
@@ -103,25 +104,32 @@ const AddProduct = () => {
     setloading(true);
 
     console.log("payload", variables.productData);
-    gql_client
-      .setHeader("token", token)
-      .request(query, variables)
-      .then(async (resp: any) => {
-        setloading(false);
-        if (resp.updateProduct) {
-          setloading(false);
-          console.log("product Updated", resp.updateProduct);
-          Alert.alert("Success", "Product Updated successfully.");
-          await fetchAllProducts((p: IProduct[]) => {
+    AsyncStorage.getItem("token")
+      .then((res: any) => {
+        gql_client
+          .setHeader("token", res)
+          .request(query, variables)
+          .then(async (resp: any) => {
             setloading(false);
-            dispatch(setProducts(p));
-            router.replace("/(tabs)/");
+            if (resp.updateProduct) {
+              setloading(false);
+              console.log("product Updated", resp.updateProduct);
+              Alert.alert("Success", "Product Updated successfully.");
+              await fetchAllProducts((p: IProduct[]) => {
+                setloading(false);
+                dispatch(setProducts(p));
+                router.replace("/(tabs)/");
+              });
+            }
+          })
+          .catch((e: any) => {
+            setloading(false);
+            console.log("Product create error", e);
+            return Alert.alert("Error", "Something went wrong.");
           });
-        }
       })
-      .catch((e: any) => {
-        setloading(false);
-        console.log("Product create error", e);
+      .catch((err: any) => {
+        console.log("Error occured in Edit Product function.");
         return Alert.alert("Error", "Something went wrong.");
       });
   };
@@ -153,20 +161,28 @@ const AddProduct = () => {
               pId: prd?._id,
             };
 
-            gql_client
-              .request(query, variables)
-              .then((resp: any) => {
-                if (resp.deleteProduct) {
-                   Alert.alert("Success", `${resp.deleteProduct}`);
-                   return router.push(`/(tabs)/`)
-                }
+            AsyncStorage.getItem("token")
+              .then((res: any) => {
+                gql_client
+                  .setHeader("token", res)
+                  .request(query, variables)
+                  .then((resp: any) => {
+                    if (resp.deleteProduct) {
+                      Alert.alert("Success", `${resp.deleteProduct}`);
+                      return router.push(`/(tabs)/`);
+                    }
+                  })
+                  .catch((err: any) => {
+                    console.log("error from delete product request", err);
+                    return Alert.alert(
+                      "Error",
+                      `Error occured while deleting: ${prd?.title}`
+                    );
+                  });
               })
               .catch((err: any) => {
-                console.log("error from delete product request", err);
-                return Alert.alert(
-                  "Error",
-                  `Error occured while deleting: ${prd?.title}`
-                );
+                console.log("Error in Delete Product Function", err);
+                return Alert.alert("Error", "Somrthing went wrong.");
               });
           },
         },
@@ -178,7 +194,7 @@ const AddProduct = () => {
 
   useLayoutEffect(() => {
     navigation.setOptions({
-      headerTitle: ` Edit ${prd?.title}`,
+      headerTitle: ` Edit ${prd?.title?.substring(0, 15)}...`,
       headerRight: () => (
         <Ionicons
           onPress={handledelete}

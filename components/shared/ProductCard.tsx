@@ -99,14 +99,16 @@ const ProductCard = ({ p }: { p: IProduct }) => {
       (s: Ishop) => s._id.toString() === p.owner._id.toString()
     );
 
-    const isFollowed = pshop.followers?.find(
-      (u: IUser) => u._id.toString() === details._id.toString()
-    );
+    if (authState) {
+      const isFollowed = pshop.followers?.find(
+        (u: IUser) => u._id.toString() === details._id.toString()
+      );
 
-    if (isFollowed) {
-      return setfollowed(true);
+      if (isFollowed) {
+        return setfollowed(true);
+      }
     }
-  }, [AllWishlist, details, followed]);
+  }, []);
   return (
     <View style={styles.productCard}>
       {/* Store Detrails  */}

@@ -121,14 +121,16 @@ const EditProfile = () => {
               email: email,
               avatar: avatar,
             };
-
             dispatch(setUserData({ ...newdata }));
             Alert.alert("Success", `${res.updateProfile}`);
-             router.replace("/(tabs)/Profile");
+            router.replace("/(tabs)/Profile");
           })
           .catch((e: any) => {
             setloading(false);
-            Alert.alert("Alert", `${e.message}`);
+            Alert.alert(
+              "Error",
+              `Unable to update your profile at this time , please try again later.`
+            );
           });
       })
       .catch((e) => {
@@ -138,7 +140,6 @@ const EditProfile = () => {
   };
 
   useLayoutEffect(() => {
-    setloading(false);
     navigation.setOptions({
       headerTitle: "Edit your profile",
       headerStyle: {

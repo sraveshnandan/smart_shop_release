@@ -76,16 +76,18 @@ const Shopdetails = (props: Props) => {
     );
     setshop(st);
 
-    const fIndex = st?.followers?.findIndex(
-      (s: IUser) => s._id.toString() === user._id.toString()
-    );
-    if (fIndex !== -1) {
-      setfollowed(true);
+    if (authState) {
+      const fIndex = st?.followers?.findIndex(
+        (s: IUser) => s._id.toString() === user._id.toString()
+      );
+      if (fIndex !== -1) {
+        setfollowed(true);
+      }
     }
-    if (user?._id.toString() === shop?.owner?._id.toString()) {
+    if (authState && user?._id.toString() === shop?.owner?._id.toString()) {
       setowner(true);
     }
-  }, [user, allShops]);
+  }, []);
   return loading ? (
     <View>
       <ActivityIndicator size={"large"} />
@@ -149,7 +151,7 @@ const Shopdetails = (props: Props) => {
       >
         {/* Shop Name  */}
         <Text
-          style={{ fontSize: 35, fontWeight: "600", color: Colors.Primary }}
+          style={{ fontSize: 25, fontWeight: "600", color: Colors.Primary }}
         >
           {shop?.name}
         </Text>

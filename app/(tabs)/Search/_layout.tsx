@@ -4,7 +4,13 @@ import { Stack } from "expo-router";
 
 const StackLayout = () => {
   return (
-    <Stack screenOptions={{ headerShown: false, headerTitleAlign: "center" }}>
+    <Stack
+      screenOptions={{
+        headerShown: false,
+        headerTitleAlign: "center",
+        animation: "ios",
+      }}
+    >
       <Stack.Screen name="index" />
       <Stack.Screen name="ShopSearch" />
     </Stack>

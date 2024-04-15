@@ -4,7 +4,7 @@ import { Stack } from "expo-router";
 
 const StackLayout = () => {
   return (
-    <Stack screenOptions={{ headerTitleAlign: "center" }}>
+    <Stack screenOptions={{ headerTitleAlign: "center", animation: "ios" }}>
       <Stack.Screen
         name="AddProduct"
         options={{
@@ -20,8 +20,6 @@ const StackLayout = () => {
       <Stack.Screen name="EditShop" />
       <Stack.Screen name="UpdatePassword" />
       <Stack.Screen name="ShopFollowersList" />
-
-
     </Stack>
   );
 };

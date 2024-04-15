@@ -48,17 +48,19 @@ const Wishlist = () => {
         return Alert.alert("Error", "Something went wrong.");
       });
   };
-
   const onRefress = useCallback(() => {
-    setrefressing(true)
+    setrefressing(true);
+    setproducts(wishlist);
     setrefressing(false);
   }, []);
 
   // Final useEffect
   useEffect(() => {
-    setproducts(wishlist);
+    if (authState) {
+      setproducts(wishlist);
+    }
     return () => {};
-  }, [wishlist]);
+  }, []);
   console.log("from wishlist page", wishlist.length);
   return authState ? (
     <SafeAreaView style={{ flex: 1, borderColor: "green" }}>

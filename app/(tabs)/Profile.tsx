@@ -30,32 +30,33 @@ import { AntDesign, Ionicons } from "@expo/vector-icons";
 import { IProduct, Ishop } from "@/types";
 import { fetchAllShops } from "@/utils/actions";
 import { setShops } from "@/redux/reducers/shop.reducers";
+import { StatusBar } from "expo-status-bar";
 
 const Profile = () => {
   const navigation = useNavigation();
   const dispatch = useDispatch();
   const authState = useSelector((state: RootState) => state.user.authState);
   const details: any = useSelector((state: RootState) => state.user.details);
-  const allShops = useSelector((state: RootState) => state.shop.shops);
+  const allShops: any = useSelector((state: RootState) => state.shop.shops);
   const [shopOwner, setshopOwner] = useState(details.isShopOwner);
-  const [shop, setshop] = useState<Ishop | undefined>(
-    allShops?.find(
-      (s: Ishop) => s.owner?.email?.toString() === details.email.toString()
-    )
-  );
   const [authType, setauthType] = useState(authState);
+  const [shop, setshop] = useState<Ishop | undefined>(
+    authState
+      ? allShops?.find(
+          (s: Ishop) => s.owner?.email?.toString() === details.email.toString()
+        )
+      : undefined
+  );
 
   const [toggle, settoggle] = useState(false);
 
   const [refreshing, setrefreshing] = useState(false);
 
   // handle logout function
-  const handlelogout = () => {
+  const handlelogout = async () => {
     console.log("Log out button clicked.");
-    Alert.alert("Warning", "Logging you out.");
-    AsyncStorage.removeItem("token").then((res) => {
-      router.replace(`/(auth)/`);
-    });
+    await AsyncStorage.clear();
+    return router.replace(`/(auth)/`);
   };
 
   // handle Link Press
@@ -102,7 +103,7 @@ const Profile = () => {
           </View>
         ),
       });
-    }, [allShops, details]);
+    }, []);
   }
 
   if (!shopOwner && authState) {
@@ -119,7 +120,6 @@ const Profile = () => {
     });
   };
   // handle on refress
-
   const onRefresh = useCallback(() => {
     setrefreshing(true);
     refetchAllshop().then(() => setrefreshing(false));
@@ -128,6 +128,7 @@ const Profile = () => {
     <>
       {shopOwner === true ? (
         <SafeAreaView style={{ flex: 1 }}>
+          <StatusBar style="inverted" />
           <ScrollView
             contentContainerStyle={{ alignItems: "center" }}
             showsVerticalScrollIndicator={false}
@@ -355,9 +356,7 @@ const Profile = () => {
                 }}
                 onPress={() =>
                   router.push(
-                    `/(screens)/ShopFollowersList?data=${JSON.stringify(
-                      shop?.followers
-                    )}` as any
+                    `/(screens)/ShopFollowersList?data=${shop?._id}` as any
                   )
                 }
               >
@@ -479,6 +478,7 @@ const Profile = () => {
       ) : (
         // NORMAL USER PROFILE PAGE
         <ScrollView style={{ flex: 1, backgroundColor: Colors.White }}>
+          <StatusBar style="inverted" />
           {/* Profile Card  */}
           <View
             style={{

@@ -349,7 +349,7 @@ const AddProduct = () => {
             }}
             placeholder=" ₹35999"
             keyboardType="numeric"
-            placeholderTextColor={Colors.DarkBg}
+            placeholderTextColor={"#444"}
             value={o_price}
             onChangeText={seto_price}
           />
@@ -364,7 +364,7 @@ const AddProduct = () => {
             }}
             placeholder="₹25990"
             keyboardType="numeric"
-            placeholderTextColor={Colors.DarkBg}
+            placeholderTextColor={"#444"}
             value={d_price}
             onChangeText={setd_price}
           />

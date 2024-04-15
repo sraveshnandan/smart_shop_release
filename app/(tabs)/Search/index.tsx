@@ -41,6 +41,9 @@ const Search = () => {
     navigation.setOptions({
       headerShown: true,
       headerTitle: "Search Products",
+      headerTitleStyle: {
+        fontFamily: "default",
+      },
       headerRight: () => (
         <TouchableOpacity
           onPress={() => router.push(`/(tabs)/Search/ShopSearch`)}
@@ -56,13 +59,26 @@ const Search = () => {
           </Text>
         </TouchableOpacity>
       ),
+      headerLeft: () => (
+        <Ionicons
+          name="chevron-back-sharp"
+          size={25}
+          onPress={() => router.push(`/(tabs)/`)}
+        />
+      ),
     });
     setProducts(AllProducts);
   }, [AllProducts]);
 
   return loading ? (
-    <View style={{ flex: 1, backgroundColor: "red", borderWidth: 2 }}>
-      LOading
+    <View
+      style={{
+        flex: 1,
+        backgroundColor: "red",
+        borderWidth: 2,
+      }}
+    >
+      <Text style={{ fontFamily: "default" }}>Loading...</Text>
     </View>
   ) : (
     <SafeAreaView
@@ -96,6 +112,7 @@ const Search = () => {
             padding: 5,
             fontSize: 16,
             fontWeight: "600",
+            fontFamily: "default",
           }}
           value={searchQuery}
           onChangeText={(value) => handleSearch(value)}
@@ -110,7 +127,11 @@ const Search = () => {
 
         {/* Product List Title  */}
 
-        <Text style={{ fontSize: 28, marginVertical: 15 }}>All Products</Text>
+        <Text
+          style={{ fontSize: 28, marginVertical: 15, fontFamily: "default" }}
+        >
+          All Products
+        </Text>
 
         {/* Product List  */}
         {AllProducts &&

@@ -9,7 +9,6 @@ import {
   Image,
   TextInput,
   KeyboardAvoidingView,
-  Alert,
   ToastAndroid,
   ImageBackground,
   ActivityIndicator,
@@ -19,13 +18,12 @@ import { gql } from "graphql-request";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { gql_client } from "@/utils";
 import { router, useNavigation } from "expo-router";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import {
   setAllUsers,
   setAuthState,
   setUserData,
 } from "@/redux/reducers/user.reducer";
-import { RootState } from "@/redux/Store";
 import {
   FetchAllUsers,
   fetchAllProducts,
@@ -34,6 +32,7 @@ import {
 import { IProduct, IUser, Ishop } from "@/types";
 import { setShops } from "@/redux/reducers/shop.reducers";
 import { setProducts } from "@/redux/reducers/product.reducer";
+import { StatusBar } from "expo-status-bar";
 
 export default function Login() {
   const dispatch = useDispatch();
@@ -101,25 +100,27 @@ export default function Login() {
       if (res !== null) {
         setloading(true);
         const query = gql`
-          query FetchProfile {
+          query ProfileFunction {
             profile {
               message
               user {
                 _id
-                email
                 name
-                avatar {
-                  public_id
-                  url
-                }
-                phone_no
-                isAdmin
-                isShopOwner
-                createdAt
+                email
                 shops {
                   _id
+                  name
+                  images {
+                    url
+                  }
+                  address
+                  followers {
+                    _id
+                  }
+                  products {
+                    _id
+                  }
                 }
-                updatedAt
               }
             }
           }
@@ -129,7 +130,6 @@ export default function Login() {
           .request(query)
           .then(async (res: any) => {
             if (res.profile.user) {
-              setloading(false);
               await fetchAllShops((shops: Ishop[]) => {
                 dispatch(setShops(shops));
               });
@@ -156,11 +156,13 @@ export default function Login() {
   };
 
   // handle skip button function
-
-  const handleSkip = () => {
+  const handleSkip = async () => {
+    setloading(true);
     console.log("Skip button is pressed.");
-    dispatch(setAuthState(false));
-    router.replace(`/(tabs)/`);
+    setTimeout(() => {
+      setloading(false);
+      router.replace("/(tabs)/");
+    }, 5000);
   };
   useEffect(() => {
     AsyncStorage.getItem("token").then((res: any) => {
@@ -190,7 +192,7 @@ export default function Login() {
           color: Colors.Primary,
           fontSize: 28,
           marginTop: 25,
-          fontWeight: "600",
+          fontWeight: "500",
         }}
       >
         Loading...
@@ -199,13 +201,13 @@ export default function Login() {
   ) : (
     <SafeAreaView style={styles.container}>
       {/* upper section  */}
-
+      <StatusBar style="inverted" />
       <View style={styles.section}>
         <View
           style={{ alignItems: "flex-end", marginRight: -5, marginTop: -15 }}
         >
           <TouchableOpacity onPress={handleSkip} style={{ marginVertical: 10 }}>
-            <Text style={{ fontSize: 20 }}>Skip</Text>
+            <Text style={{ fontSize: 20, fontFamily: "default" }}>Skip</Text>
           </TouchableOpacity>
         </View>
 
@@ -290,7 +292,7 @@ export default function Login() {
           </View>
 
           <View style={styles.linkbtnBox}>
-            <Text style={styles.text}>Don't have an account? </Text>
+            <Text style={styles.text}>Don't have an account</Text>
             <TouchableOpacity
               onPress={() => navigation.navigate("Register" as never)}
             >
@@ -315,6 +317,7 @@ const styles = StyleSheet.create({
     fontWeight: "600",
     marginTop: 10,
     color: Colors.Primary,
+    fontFamily: "default",
   },
   icon: {
     width: 150,
@@ -346,6 +349,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     marginBottom: 15,
     paddingVertical: 15,
+    fontFamily: "default",
   },
   button: {
     width: "100%",
@@ -359,12 +363,15 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: "800",
     color: Colors.White,
+    fontFamily: "default",
   },
   link: {
     color: Colors.Link,
     fontSize: 18,
     alignSelf: "flex-end",
     marginBottom: 10,
+    fontFamily: "default",
+    textAlign: "center",
   },
   seperator: {
     alignItems: "center",
@@ -381,10 +388,14 @@ const styles = StyleSheet.create({
   },
   text: {
     fontSize: 20,
+    fontFamily: "default",
   },
   linkbtnBox: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
+    alignSelf: "center",
+    gap: 15,
+    textAlign: "center",
   },
 });

@@ -145,7 +145,15 @@ const index = () => {
       <CategorySection /> */}
 
       {/* shop list horizontal  */}
-      <Text style={{ fontSize: 25, marginVertical: 20, textAlign: "center" }}>
+      <Text
+        style={{
+          fontSize: 25,
+          marginVertical: 20,
+          textAlign: "center",
+          fontFamily: "default",
+          borderBottomColor: Colors.Primary,
+        }}
+      >
         All Shops
       </Text>
       <ScrollView
@@ -225,7 +233,14 @@ const index = () => {
       </ScrollView>
 
       {/* Product lists  */}
-      <Text style={{ fontSize: 25, marginVertical: 10, textAlign: "center" }}>
+      <Text
+        style={{
+          fontSize: 25,
+          marginVertical: 10,
+          textAlign: "center",
+          fontFamily: "default",
+        }}
+      >
         All Products
       </Text>
       <View style={{ width: "100%", alignItems: "center", marginVertical: 20 }}>

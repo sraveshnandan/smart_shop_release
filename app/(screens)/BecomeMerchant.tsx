@@ -69,11 +69,15 @@ const BecomeMerchant = () => {
             public_id: data.public_id,
             url: data.secure_url,
           };
-          setImages((prev) => [...prev, Avatar]);
+          setImages([Avatar]);
         })
         .catch((error: any) => {
           setloading(false);
           console.error("Upload error:", error);
+          return Alert.alert(
+            "Error",
+            "Something went wrong ,whlie uploading image."
+          );
         });
     } else {
       Alert.alert("Error", "No any images selected.");
@@ -114,7 +118,7 @@ const BecomeMerchant = () => {
         .request(query, variables)
         .then((res: any) => {
           setloading(false);
-          console.log(res);
+          console.log("Shop created successfully", res);
           if (res.createShop) {
             const newShop = res.createShop;
             const data = AllShops.push(newShop);
@@ -125,16 +129,14 @@ const BecomeMerchant = () => {
         })
         .catch((e: any) => {
           setloading(false);
-
-            return "An unknown duplicate key error occurred.";
-          
+          return Alert.alert("Error", "Unable create shop at this time.");
         });
     }
   };
 
   useLayoutEffect(() => {
     navigation.setOptions({
-      headerTitle: "Register your shop",
+      headerTitle: "Create your shop",
     });
   }, []);
 

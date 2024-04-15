@@ -53,8 +53,18 @@ const Search = () => {
       headerShown: true,
       headerTitle: "Search Shops",
       headerBackTitleVisible: true,
+      headerTitleStyle: {
+        fontFamily: "default",
+      },
 
-      headerLeft:()=><Ionicons name="chevron-back-circle-outline" size={25} style={{marginRight:25}} onPress={()=> router.push("/(tabs)/Search/")}/>
+      headerLeft: () => (
+        <Ionicons
+          name="chevron-back-circle-outline"
+          size={25}
+          style={{ marginRight: 25 }}
+          onPress={() => router.push("/(tabs)/Search/")}
+        />
+      ),
     });
 
     setProducts(AllProducts);
@@ -95,6 +105,7 @@ const Search = () => {
             padding: 5,
             fontSize: 16,
             fontWeight: "600",
+            fontFamily: "default",
           }}
           value={searchQuery}
           onChangeText={(value) => handleSearch(value)}
@@ -116,7 +127,11 @@ const Search = () => {
 
         {/* Product List Title  */}
 
-        <Text style={{ fontSize: 28, marginVertical: 15 }}>All Shops</Text>
+        <Text
+          style={{ fontSize: 28, marginVertical: 15, fontFamily: "default" }}
+        >
+          All Shops
+        </Text>
 
         {/* Product List  */}
         {AllProducts &&
