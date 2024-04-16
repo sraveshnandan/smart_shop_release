@@ -26,6 +26,7 @@ import { gql_client, token } from "@/utils";
 import { setProducts } from "@/redux/reducers/product.reducer";
 import { router } from "expo-router";
 import { IProduct, Ishop } from "@/types";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const AddProduct = () => {
   const dispatch = useDispatch();
@@ -127,90 +128,185 @@ const AddProduct = () => {
   };
   const handleProductUpload = async () => {
     setloading(true);
-    uploadImagesToCloudinary(uri)
-      .then((res: any) => {
-        setloading(false);
-        console.log("Image upload responce", res);
-        const query = gql`
-          mutation CreatePRoductFunction($productData: ProductInput) {
-            createProduct(data: $productData) {
-              message
-              data {
-                _id
-                title
-                description
-                images {
-                  url
-                }
-                original_price
-                discount_price
-                category {
+    if (images.length === 0) {
+      uploadImagesToCloudinary(uri)
+        .then((res: any) => {
+          setloading(false);
+          console.log("Image upload responce", res);
+          const query = gql`
+            mutation CreatePRoductFunction($productData: ProductInput) {
+              createProduct(data: $productData) {
+                message
+                data {
                   _id
-                  name
-                }
-                owner {
-                  _id
-                  name
-                  address
+                  title
+                  description
+                  images {
+                    url
+                  }
+                  original_price
+                  discount_price
+                  category {
+                    _id
+                    name
+                  }
                   owner {
                     _id
-                    avatar {
-                      url
+                    name
+                    address
+                    owner {
+                      _id
+                      avatar {
+                        url
+                      }
                     }
                   }
-                }
-                views
-                ratings
-                likes {
-                  _id
-                }
-                extra {
-                  name
-                  value
+                  views
+                  ratings
+                  likes {
+                    _id
+                  }
+                  extra {
+                    name
+                    value
+                  }
                 }
               }
             }
-          }
-        `;
-        const variables = {
-          productData: {
-            title: title,
-            description: description,
-            images: res,
-            category: category,
-            original_price: Number(o_price),
-            discount_price: Number(d_price),
-            extra: extras,
-            owner: shopOwner,
-          },
-        };
-        setloading(true);
-        gql_client
-          .setHeader("token", token)
-          .request(query, variables)
-          .then(async (resp: any) => {
-            if (resp.createProduct) {
-              setloading(false);
-              console.log("product created", resp.createProduct);
-              Alert.alert("Success", "Product created successfully.");
-              await fetchAllProducts((p: IProduct[]) => {
-                setloading(false);
-                dispatch(setProducts(p));
-                router.replace("/(tabs)/");
-              });
+          `;
+          const variables = {
+            productData: {
+              title: title,
+              description: description,
+              images: res,
+              category: category,
+              original_price: Number(o_price),
+              discount_price: Number(d_price),
+              extra: extras,
+              owner: shopOwner,
+            },
+          };
+          setloading(true);
+          AsyncStorage.getItem("token")
+            .then((res: any) => {
+              gql_client
+                .setHeader("token", res)
+                .request(query, variables)
+                .then(async (resp: any) => {
+                  if (resp.createProduct) {
+                    setloading(false);
+                    console.log("product created", resp.createProduct);
+                    Alert.alert("Success", "Product created successfully.");
+                    await fetchAllProducts((p: IProduct[]) => {
+                      setloading(false);
+                      dispatch(setProducts(p));
+                      router.replace("/(tabs)/");
+                    });
+                  }
+                })
+                .catch((e: any) => {
+                  setloading(false);
+                  console.log("Product create error", e);
+                  return Alert.alert("Error", "Something went wrong.");
+                });
+            })
+            .catch((e: any) => {
+              return Alert.alert(
+                "Error",
+                "Unable to create product, please try again."
+              );
+            });
+        })
+        .catch((e) => {
+          setloading(false);
+          console.log("Unable to upload images", e);
+          return Alert.alert("Error", "Unable to upload images.");
+        });
+    } else {
+      const query = gql`
+        mutation CreatePRoductFunction($productData: ProductInput) {
+          createProduct(data: $productData) {
+            message
+            data {
+              _id
+              title
+              description
+              images {
+                url
+              }
+              original_price
+              discount_price
+              category {
+                _id
+                name
+              }
+              owner {
+                _id
+                name
+                address
+                owner {
+                  _id
+                  avatar {
+                    url
+                  }
+                }
+              }
+              views
+              ratings
+              likes {
+                _id
+              }
+              extra {
+                name
+                value
+              }
             }
-          })
-          .catch((e: any) => {
-            setloading(false);
-            console.log("Product create error", e);
-            return Alert.alert("Error", "Something went wrong.");
-          });
-      })
-      .catch((e) => {
-        setloading(false);
-        console.log("Unable to upload images", e);
-        return Alert.alert("Error", "Unable to upload images.");
-      });
+          }
+        }
+      `;
+      const variables = {
+        productData: {
+          title: title,
+          description: description,
+          images: images,
+          category: category,
+          original_price: Number(o_price),
+          discount_price: Number(d_price),
+          extra: extras,
+          owner: shopOwner,
+        },
+      };
+      setloading(true);
+      AsyncStorage.getItem("token")
+        .then((res: any) => {
+          gql_client
+            .setHeader("token", res)
+            .request(query, variables)
+            .then(async (resp: any) => {
+              if (resp.createProduct) {
+                setloading(false);
+                console.log("product created", resp.createProduct);
+                Alert.alert("Success", "Product created successfully.");
+                await fetchAllProducts((p: IProduct[]) => {
+                  setloading(false);
+                  dispatch(setProducts(p));
+                  router.replace("/(tabs)/");
+                });
+              }
+            })
+            .catch((e: any) => {
+              setloading(false);
+              console.log("Product create error", e);
+              return Alert.alert("Error", "Something went wrong.");
+            });
+        })
+        .catch((e: any) => {
+          return Alert.alert(
+            "Error",
+            "Unable to create product, please try again."
+          );
+        });
+    }
   };
 
   useLayoutEffect(() => {
@@ -347,9 +443,9 @@ const AddProduct = () => {
               backgroundColor: Colors.White,
               borderRadius: 8,
             }}
-            placeholder=" ₹35999"
+            placeholder="₹35999"
             keyboardType="numeric"
-            placeholderTextColor={"#444"}
+            placeholderTextColor={"#888"}
             value={o_price}
             onChangeText={seto_price}
           />
@@ -364,7 +460,7 @@ const AddProduct = () => {
             }}
             placeholder="₹25990"
             keyboardType="numeric"
-            placeholderTextColor={"#444"}
+            placeholderTextColor={"#888"}
             value={d_price}
             onChangeText={setd_price}
           />

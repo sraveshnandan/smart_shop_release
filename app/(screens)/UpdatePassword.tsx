@@ -54,7 +54,7 @@ const UpdatePassword = (props: Props) => {
             setloading(false);
             console.log("responce from update Password.");
             if (resp.updatePassword) {
-              Alert.alert("Success", `${resp.UpdatePassword}`);
+              Alert.alert("Success", `Password updated successfully.`);
               return router.push(`/(tabs)/Profile`);
             }
             console.log(resp);
@@ -62,7 +62,7 @@ const UpdatePassword = (props: Props) => {
           .catch((err: any) => {
             setloading(false);
             console.log("password update function", err);
-            const errmsg = err
+            const errmsg = err;
             return Alert.alert("Error", `${errmsg}`);
           });
       })

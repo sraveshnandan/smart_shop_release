@@ -372,7 +372,7 @@ const AddProduct = () => {
           Product Specifications
         </Text>
 
-        {extras.map((item, index) => (
+        {extras?.map((item, index) => (
           <View key={index} style={styles.inputContainer}>
             <TextInput
               style={styles.input}
@@ -395,14 +395,18 @@ const AddProduct = () => {
         {/* Preview button  */}
 
         <TouchableOpacity
-          style={{
-            marginTop: 60,
-            marginBottom: 20,
-            width: "90%",
-            backgroundColor: Colors.Primary,
-            paddingVertical: 15,
-            borderRadius: 8,
-          }}
+          style={[
+            {
+              marginTop: 60,
+              marginBottom: 20,
+              width: "90%",
+              backgroundColor: Colors.Primary,
+              paddingVertical: 15,
+              borderRadius: 8,
+            },
+            loading ? { backgroundColor: "#888" } : {},
+          ]}
+          disabled={loading}
         >
           <Text
             onPress={handleProductUpload}
@@ -413,7 +417,7 @@ const AddProduct = () => {
               textTransform: "uppercase",
             }}
           >
-            Preview
+            {loading ? "Please wait..." : "Update "}
           </Text>
         </TouchableOpacity>
       </ScrollView>

@@ -12,14 +12,13 @@ import {
 import React, { useLayoutEffect, useState } from "react";
 import { router, useLocalSearchParams, useNavigation } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Colors, screenWidth } from "@/constants";
+import { Colors } from "@/constants";
 import { Ionicons } from "@expo/vector-icons";
 import * as ImagePicker from "expo-image-picker";
 import { gql } from "graphql-request";
-import { gql_client, token } from "@/utils";
+import { gql_client } from "@/utils";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/redux/Store";
-import { setShops } from "@/redux/reducers/shop.reducers";
 import { Ishop } from "@/types";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
@@ -126,27 +125,29 @@ const BecomeMerchant = () => {
 
       console.log("payload is", variables.shopData);
 
-      AsyncStorage.getItem("token").then(async (res: any) => {
-        await gql_client
-          .setHeader("token", res)
-          .request(query, variables)
-          .then((res: any) => {
-            setloading(false);
-            console.log(res);
-            if (res.updateShop) {
-              Alert.alert("Success", `${res.updateShop.message}`);
-              return router.replace(`/(tabs)/Profile`);
-            }
-          })
-          .catch((e: any) => {
-            setloading(false);
-            console.log(e);
-            return Alert.alert("Error", "Something went wrong.");
-          });
-      }).catch((e:any)=>{
-        console.log("error from edit shop page", e)
-        return Alert.alert("Error", "Unable to perform this operation.")
-      })
+      AsyncStorage.getItem("token")
+        .then(async (res: any) => {
+          await gql_client
+            .setHeader("token", res)
+            .request(query, variables)
+            .then((res: any) => {
+              setloading(false);
+              console.log(res);
+              if (res.updateShop) {
+                Alert.alert("Success", `${res.updateShop.message}`);
+                return router.replace(`/(tabs)/Profile`);
+              }
+            })
+            .catch((e: any) => {
+              setloading(false);
+              console.log(e);
+              return Alert.alert("Error", "Something went wrong.");
+            });
+        })
+        .catch((e: any) => {
+          console.log("error from edit shop page", e);
+          return Alert.alert("Error", "Unable to perform this operation.");
+        });
     }
   };
 
@@ -155,9 +156,6 @@ const BecomeMerchant = () => {
       headerTitle: "Edit your shop",
     });
   }, []);
-
-  console.log(Images);
-
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <ScrollView style={{ flex: 1 }} showsVerticalScrollIndicator={false}>

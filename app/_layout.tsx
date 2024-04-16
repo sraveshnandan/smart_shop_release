@@ -11,8 +11,13 @@ import {
 } from "@/utils/actions";
 import { useFonts } from "expo-font";
 import { Stack } from "expo-router";
-import { useEffect } from "react";
+import { useCallback, useEffect } from "react";
 import { Provider, useDispatch, useSelector } from "react-redux";
+
+import * as SplashScreen from "expo-splash-screen";
+
+//Hidind splash screen from auto hide
+SplashScreen.preventAutoHideAsync();
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -61,13 +66,20 @@ const RootLayoutNav = () => {
 
 // Main Layout Function
 const RootLayout = () => {
-  const [loaded, errors] = useFonts({
+  const [fontsLoaded, fontError] = useFonts({
     default: require("../assets/fonts/Aldrich.ttf"),
   });
 
-  if (!loaded && errors) {
-    return;
+  useEffect(() => {
+    if (fontsLoaded || fontError) {
+      SplashScreen.hideAsync();
+    }
+  }, [fontsLoaded, fontError]);
+
+  if (!fontsLoaded && !fontError) {
+    return null;
   }
+
   return (
     <Provider store={store}>
       <RootLayoutNav />

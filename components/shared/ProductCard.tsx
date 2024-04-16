@@ -9,7 +9,7 @@ import {
 } from "react-native";
 import React, { useEffect, useState } from "react";
 import { Colors } from "@/constants";
-import { getPercentage, gql_client, token } from "@/utils";
+import { getPercentage, gql_client } from "@/utils";
 import { AntDesign, Ionicons } from "@expo/vector-icons";
 import { IProduct, IUser, Ishop } from "@/types";
 import { router } from "expo-router";
@@ -18,6 +18,7 @@ import { RootState } from "@/redux/Store";
 import { LikeAndUnlikeProduct } from "@/utils/actions";
 import { addToWishlist } from "@/redux/reducers/user.reducer";
 import { gql } from "graphql-request";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 const ScreenWidth = Dimensions.get("screen").width;
 const ProductCard = ({ p }: { p: IProduct }) => {
   const dispatch = useDispatch();
@@ -67,18 +68,32 @@ const ProductCard = ({ p }: { p: IProduct }) => {
     const variables = {
       SHOPID: p.owner._id,
     };
-    gql_client
-      .setHeader("token", token)
-      .request(query, variables)
+    AsyncStorage.getItem("token")
       .then((res: any) => {
-        console.log(res);
-        if (res.followShop === "You can't follow your shop.") {
-          return Alert.alert("Warning", "You can't follow your shop.");
-        }
-        setfollowed((prev) => !prev);
+        gql_client
+          .setHeader("token", res)
+          .request(query, variables)
+          .then((res: any) => {
+            console.log(res);
+            if (res.followShop === "You can't follow your shop.") {
+              return Alert.alert("Warning", "You can't follow your shop.");
+            }
+            setfollowed((prev) => !prev);
+            return Alert.alert("Success", `${res.followShop}`);
+          })
+          .catch((e: any) => {
+            console.log(e);
+            return Alert.alert(
+              "Error",
+              "Unable to follow shop, please try again."
+            );
+          });
       })
-      .catch((e: any) => {
-        console.log(e);
+      .catch((err: any) => {
+        return Alert.alert(
+          "Error",
+          "Something went wrong, please try again later."
+        );
       });
   };
 
@@ -99,16 +114,15 @@ const ProductCard = ({ p }: { p: IProduct }) => {
       (s: Ishop) => s._id.toString() === p.owner._id.toString()
     );
 
-    if (authState) {
+    if (authState && details) {
       const isFollowed = pshop.followers?.find(
         (u: IUser) => u._id.toString() === details._id.toString()
       );
-
       if (isFollowed) {
         return setfollowed(true);
       }
     }
-  }, []);
+  }, [authState, details, followed]);
   return (
     <View style={styles.productCard}>
       {/* Store Detrails  */}
@@ -146,7 +160,9 @@ const ProductCard = ({ p }: { p: IProduct }) => {
             />
           )}
           <View>
-            <Text style={{ fontSize: 18, fontWeight: "600" }}>
+            <Text
+              style={{ fontSize: 18, fontWeight: "400", fontFamily: "default" }}
+            >
               {p?.owner?.name?.substring(0, 15)}...
             </Text>
             <Text style={{ fontSize: 10, fontWeight: "600" }}>
@@ -229,7 +245,9 @@ const ProductCard = ({ p }: { p: IProduct }) => {
           router.push(`/(screens)/ProductsDetails?id=${p._id}` as any)
         }
       >
-        <Text style={{ fontSize: 28, fontWeight: "600" }}>
+        <Text
+          style={{ fontSize: 25, fontWeight: "600", fontFamily: "default" }}
+        >
           {p.title?.substring(0, 13)}...
         </Text>
 
@@ -282,6 +300,7 @@ const ProductCard = ({ p }: { p: IProduct }) => {
           borderTopWidth: 1,
           borderColor: Colors.LightBg,
           marginTop: 5,
+          fontFamily: "default",
         }}
       >
         {p.description?.substring(0, 80)}...

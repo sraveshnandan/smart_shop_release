@@ -15,8 +15,7 @@ import { Colors, screenHeight } from "@/constants";
 import { Ionicons } from "@expo/vector-icons";
 import { useSelector } from "react-redux";
 import { RootState } from "@/redux/Store";
-import { ProductCard } from "@/components";
-import { IProduct, Ishop } from "@/types";
+import { Ishop } from "@/types";
 import { router, useNavigation } from "expo-router";
 
 const Search = () => {
@@ -211,6 +210,7 @@ const Search = () => {
                     textAlign: "center",
                     fontWeight: "600",
                     color: Colors.Primary,
+                    fontFamily: "default",
                   }}
                 >
                   {p.name?.substring(0, 20)}
@@ -223,6 +223,7 @@ const Search = () => {
                     textAlign: "center",
                     fontWeight: "600",
                     color: "#444",
+                    fontFamily: "default",
                   }}
                 >
                   {p.address?.substring(0, 30)}
@@ -250,6 +251,7 @@ const Search = () => {
                       fontWeight: "600",
                       fontSize: 16,
                       color: Colors.White,
+                      fontFamily: "default",
                     }}
                   >
                     View More

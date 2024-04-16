@@ -22,7 +22,8 @@ const ShopLists = () => {
   useEffect(() => {
     setuserData(user);
     console.log(user.shops);
-  }, []);
+  }, [user]);
+  console.log(JSON.stringify(user, null, 1));
   return (
     <ScrollView
       showsVerticalScrollIndicator={false}

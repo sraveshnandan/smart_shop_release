@@ -20,6 +20,9 @@ const StackLayout = () => {
       <Stack.Screen name="EditShop" />
       <Stack.Screen name="UpdatePassword" />
       <Stack.Screen name="ShopFollowersList" />
+      <Stack.Screen name="Setting" />
+      <Stack.Screen name="Terms" />
+      <Stack.Screen name="Help" />
     </Stack>
   );
 };

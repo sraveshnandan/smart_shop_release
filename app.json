@@ -45,6 +45,14 @@
           "photosPermission": "Allow $(PRODUCT_NAME) to access your photo",
           "cameraPermission": "Allow $(PRODUCT_NAME) to access your camera"
         }
+      ],
+      [
+        "expo-font",
+        {
+          "fonts": [
+            "./assets/fonts/Aldrich.ttf"
+          ]
+        }
       ]
     ],
     "experiments": {

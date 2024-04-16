@@ -56,16 +56,16 @@ const ownersButtons: any[] = [
   },
 
   {
-    title: "Help",
-    link: "",
+    title: "Privacy Policy",
+    link: "/(screens)/Help",
   },
   {
     title: "Career",
     link: "",
   },
   {
-    title: "Ads Service",
-    link: "",
+    title: "Terms & Condition",
+    link: "/(screens)/Terms",
   },
 ];
 

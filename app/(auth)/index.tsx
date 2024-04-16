@@ -107,6 +107,8 @@ export default function Login() {
                 _id
                 name
                 email
+                isShopOwner
+                isAdmin
                 shops {
                   _id
                   name
@@ -120,6 +122,7 @@ export default function Login() {
                   products {
                     _id
                   }
+                  createdAt
                 }
               }
             }

@@ -24,7 +24,7 @@ const Productpage = ({ p }: { p: any }) => {
         {/* Product images  */}
         <View
           style={{
-            width: ScreenWidth * 0.98,
+            width: screenWidth * 0.98,
             backgroundColor: Colors.White,
             paddingVertical: 5,
           }}
@@ -34,7 +34,7 @@ const Productpage = ({ p }: { p: any }) => {
             contentStyle={{
               height: 250,
               resizeMode: "contain",
-              width: ScreenWidth * 1,
+              width: screenWidth * 1,
             }}
             images={p.uri}
             inActiveDotColor="#444"

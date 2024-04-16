@@ -30,7 +30,7 @@ const ShopFollowersList = (props: Props) => {
   }, []);
 
   return (
-    <SafeAreaView style={{ flex: 1, borderWidth: 2 }}>
+    <SafeAreaView style={{ flex: 1 }}>
       <FlatList
         data={users}
         renderItem={({ item }) => (
@@ -42,7 +42,7 @@ const ShopFollowersList = (props: Props) => {
               padding: 5,
               backgroundColor: Colors.White,
               borderRadius: 8,
-              marginVertical: 15,
+              marginVertical: 5,
             }}
           >
             <Image

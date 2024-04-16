@@ -81,7 +81,14 @@ const Productpage = () => {
         {/* product title  */}
 
         <View style={{ marginTop: 10, alignSelf: "flex-start", padding: 10 }}>
-          <Text style={{ fontSize: 28, fontWeight: "600", textAlign: "left" }}>
+          <Text
+            style={{
+              fontSize: 28,
+              fontWeight: "600",
+              textAlign: "left",
+              fontFamily: "default",
+            }}
+          >
             {product?.title}
           </Text>
         </View>
@@ -135,7 +142,9 @@ const Productpage = () => {
 
         <View style={{ padding: 10 }}>
           <Text style={{ fontSize: 22, marginBottom: 10 }}>Description</Text>
-          <Text style={{ fontSize: 18 }}>{product?.description}</Text>
+          <Text style={{ fontSize: 18, fontFamily: "default" }}>
+            {product?.description}
+          </Text>
           {/* Extra field Specifications  */}
           {product?.extra && (
             <>
@@ -157,7 +166,12 @@ const Productpage = () => {
                   }}
                 >
                   <Text
-                    style={{ color: "#444", fontWeight: "600", fontSize: 18 }}
+                    style={{
+                      color: "#444",
+                      fontWeight: "600",
+                      fontSize: 18,
+                      fontFamily: "default",
+                    }}
                   >
                     {item.name} :
                   </Text>
@@ -166,6 +180,7 @@ const Productpage = () => {
                       color: "#000",
                       fontSize: 16,
                       fontWeight: "600",
+                      fontFamily: "default",
                     }}
                   >
                     {item.value}
@@ -201,12 +216,24 @@ const Productpage = () => {
             }}
             source={{ uri: shop?.owner?.avatar.url }}
           />
-          <Text style={{ fontSize: 28, fontWeight: "600" }}>{shop?.name}</Text>
+          <Text
+            style={{ fontSize: 25, fontWeight: "600", fontFamily: "default" }}
+          >
+            {shop?.name}
+          </Text>
           <Text>{shop?.address}</Text>
         </View>
         {/* OtherProduct From shop  */}
-        <Text style={{ marginTop: 20, paddingLeft: 15, fontSize: 25 }}>
-          Other products from {shop?.name}
+        <Text
+          style={{
+            marginTop: 20,
+            paddingLeft: 15,
+            fontSize: 25,
+            textAlign: "center",
+            fontFamily: "default",
+          }}
+        >
+          products from {shop?.name?.substring(0, 10)}...
         </Text>
 
         <ScrollView
@@ -254,6 +281,7 @@ const Productpage = () => {
                       fontWeight: "600",
                       marginTop: 10,
                       paddingHorizontal: 10,
+                      fontFamily:"default"
                     }}
                   >
                     {pr.title?.substring(0, 20)}...

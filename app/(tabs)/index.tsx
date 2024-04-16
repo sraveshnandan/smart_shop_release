@@ -211,7 +211,7 @@ const index = () => {
                       <Ionicons
                         name="storefront-outline"
                         size={250}
-                        color={Colors.Primary}
+                        color={"#888"}
                       />
                     </View>
                   )}
@@ -219,10 +219,16 @@ const index = () => {
 
                 {/* Shop Details  */}
                 <View style={{ width: "100%", marginTop: 8 }}>
-                  <Text style={{ fontSize: 28 }}>
+                  <Text style={{ fontSize: 25, fontFamily: "default" }}>
                     {s.name?.substring(0, 25)}...
                   </Text>
-                  <Text style={{ fontSize: 18, color: "#444" }}>
+                  <Text
+                    style={{
+                      fontSize: 18,
+                      color: "#444",
+                      fontFamily: "default",
+                    }}
+                  >
                     {s.address?.substring(0, 25)}...
                   </Text>
                 </View>

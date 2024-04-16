@@ -151,14 +151,23 @@ const Shopdetails = (props: Props) => {
       >
         {/* Shop Name  */}
         <Text
-          style={{ fontSize: 25, fontWeight: "600", color: Colors.Primary }}
+          style={{
+            fontSize: 25,
+            fontWeight: "600",
+            color: Colors.Primary,
+            fontFamily: "default",
+          }}
         >
           {shop?.name}
         </Text>
 
         {/* Shop Address  */}
 
-        <Text style={{ fontWeight: "600" }}>{shop?.address}</Text>
+        <Text
+          style={{ fontWeight: "600", fontFamily: "default", color: "#444" }}
+        >
+          {shop?.address}
+        </Text>
 
         <Text
           style={{
@@ -170,7 +179,7 @@ const Shopdetails = (props: Props) => {
         >
           About the shop
         </Text>
-        <Text style={{}}>{shop?.description}</Text>
+        <Text style={{ fontFamily: "default" }}>{shop?.description}</Text>
 
         <View
           style={{
